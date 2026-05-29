@@ -1,0 +1,2030 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>写给非工程师的生成式AI技术史</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=Noto+Sans+SC:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:        #faf9f7;
+  --bg2:       #f3f1ee;
+  --bg3:       #eceae6;
+  --border:    rgba(0,0,0,0.08);
+  --border2:   rgba(0,0,0,0.13);
+  --text:      #1a1916;
+  --text2:     #5a574f;
+  --text3:     #9a9690;
+  --accent:    #7a5c10;
+  --accent2:   #8f6d18;
+  --accent-bg: rgba(122,92,16,0.07);
+  --accent-border: rgba(122,92,16,0.22);
+  --teal:      #1a6e52;
+  --teal-bg:   rgba(26,110,82,0.07);
+  --teal-border: rgba(26,110,82,0.2);
+  --purple:    #5a3fb8;
+  --coral:     #b84020;
+  --amber:     #9a6008;
+  --red:       #a83030;
+  --red-bg:    rgba(168,48,48,0.07);
+  --red-border: rgba(168,48,48,0.2);
+  --serif:     'Noto Serif SC', serif;
+  --sans:      'Noto Sans SC', sans-serif;
+  --mono:      'JetBrains Mono', monospace;
+  --radius:    8px;
+  --radius-lg: 14px;
+  --trans:     0.18s ease;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 15px;
+  font-weight: 300;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent2); }
+strong { font-weight: 500; color: var(--text); }
+code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  background: var(--bg3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--teal);
+}
+
+/* ── Layout ── */
+.app { display: flex; min-height: 100vh; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: #fff;
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-logo {
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo h1 {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+}
+.sidebar-logo p {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 4px;
+  font-weight: 300;
+}
+.sidebar-nav { padding: 16px 0; flex: 1; }
+.nav-stage {
+  margin-bottom: 4px;
+}
+.nav-stage-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 24px;
+  background: none;
+  border: none;
+  color: var(--text2);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  text-align: left;
+  transition: color var(--trans), background var(--trans);
+  border-left: 2px solid transparent;
+}
+.nav-stage-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.nav-stage-btn.active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  background: rgba(200,169,110,0.06);
+  font-weight: 500;
+}
+.nav-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--text3);
+  flex-shrink: 0;
+  transition: background var(--trans);
+}
+.nav-stage-btn.active .nav-dot { background: var(--accent); }
+.nav-stage-btn.done .nav-dot { background: var(--teal); }
+.nav-stage-btn.done { color: var(--text2); }
+.sidebar-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.6;
+}
+
+/* ── Main Content ── */
+.main {
+  margin-left: 260px;
+  flex: 1;
+  min-height: 100vh;
+}
+
+/* ── Hero ── */
+.hero-wrap {
+  border-bottom: 1px solid var(--border);
+  width: 100%;
+}
+.hero {
+  padding: 64px 60px 52px;
+  max-width: 840px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(200,169,110,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid rgba(200,169,110,0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+.hero h2 {
+  font-family: var(--serif);
+  font-size: 42px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--text);
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.hero h2 span { color: var(--accent); }
+.hero p {
+  font-size: 16px;
+  color: var(--text2);
+  max-width: 580px;
+  line-height: 1.75;
+  margin-bottom: 12px;
+  font-weight: 300;
+}
+.hero-meta {
+  display: flex;
+  gap: 24px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+.hero-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.hero-meta-item .label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text3);
+  font-weight: 500;
+}
+.hero-meta-item .value {
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 400;
+}
+.hero-timeline {
+  display: flex;
+  gap: 0;
+  margin-top: 40px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 130px;
+  cursor: pointer;
+  transition: opacity var(--trans);
+}
+.timeline-step:hover { opacity: 0.8; }
+.timeline-connector {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.tl-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--border2);
+  background: var(--bg2);
+  flex-shrink: 0;
+  transition: border-color var(--trans), background var(--trans);
+}
+.timeline-step.active .tl-dot,
+.timeline-step:hover .tl-dot {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+.tl-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.timeline-step:last-child .tl-line { display: none; }
+.tl-label {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 8px;
+  text-align: center;
+  padding: 0 4px;
+  line-height: 1.4;
+  transition: color var(--trans);
+}
+.timeline-step.active .tl-label,
+.timeline-step:hover .tl-label { color: var(--accent); }
+
+/* ── Stage Sections ── */
+.stage-section {
+  border-bottom: 1px solid var(--border);
+  display: none;
+  width: 100%;
+}
+.stage-section.active { display: block; }
+.stage-inner {
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 52px 60px;
+}
+.stage-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 36px;
+}
+.stage-number {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
+  background: rgba(200,169,110,0.1);
+  border: 1px solid rgba(200,169,110,0.2);
+  padding: 4px 10px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 4px;
+  letter-spacing: 0.05em;
+}
+.stage-header-text h2 {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.stage-header-text .stage-era {
+  font-size: 12px;
+  color: var(--text3);
+  font-weight: 400;
+}
+.stage-header-text .stage-desc {
+  font-size: 14px;
+  color: var(--text2);
+  margin-top: 8px;
+  line-height: 1.65;
+  max-width: 560px;
+}
+
+/* ── Stepper ── */
+.stepper { margin-bottom: 32px; }
+.step-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.step-pill {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 400;
+  cursor: pointer;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  background: transparent;
+  font-family: var(--sans);
+  transition: all var(--trans);
+}
+.step-pill:hover { color: var(--text2); border-color: rgba(255,255,255,0.2); }
+.step-pill.active {
+  background: rgba(200,169,110,0.12);
+  color: var(--accent);
+  border-color: rgba(200,169,110,0.3);
+  font-weight: 500;
+}
+.step-panel { display: none; }
+.step-panel.active { display: block; }
+.step-era {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
+.step-title {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+.stepper-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+}
+.stepper-counter {
+  font-size: 11px;
+  color: var(--text3);
+  font-family: var(--mono);
+}
+.btn {
+  padding: 7px 18px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--sans);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--trans);
+  border: 1px solid var(--border2);
+  background: #fff;
+  color: var(--text2);
+}
+.btn:hover { background: var(--bg2); color: var(--text); }
+.btn.primary {
+  background: rgba(200,169,110,0.12);
+  border-color: rgba(200,169,110,0.3);
+  color: var(--accent);
+}
+.btn.primary:hover {
+  background: rgba(200,169,110,0.2);
+  color: var(--accent2);
+}
+.btn:disabled, .btn[style*="visibility:hidden"] { opacity: 0; pointer-events: none; }
+
+/* ── Content Blocks ── */
+.info-block {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin: 12px 0;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.success-block {
+  background: rgba(78,201,168,0.06);
+  border: 1px solid rgba(78,201,168,0.2);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin: 12px 0;
+  font-size: 13px;
+  color: #0d4a36;
+  line-height: 1.7;
+}
+.warning-block {
+  background: rgba(240,192,96,0.06);
+  border: 1px solid rgba(240,192,96,0.2);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin: 12px 0;
+  font-size: 13px;
+  color: #6b4400;
+  line-height: 1.7;
+}
+.danger-block {
+  background: rgba(240,96,96,0.06);
+  border: 1px solid rgba(240,96,96,0.2);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin: 12px 0;
+  font-size: 13px;
+  color: #7a1e1e;
+  line-height: 1.7;
+}
+.accent-block {
+  border-left: 2px solid var(--accent);
+  padding: 8px 14px;
+  margin: 12px 0;
+  font-size: 13px;
+  color: var(--text2);
+  font-style: italic;
+  line-height: 1.7;
+}
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 12px 0;
+}
+.three-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin: 12px 0;
+}
+.col-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+.col-card .col-label {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
+.col-card p {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+.tag {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  margin: 2px 3px 2px 0;
+  font-family: var(--mono);
+}
+
+/* ── Expand Node (追问展开) ── */
+.expand-node {
+  margin: 16px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #fff;
+}
+.expand-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text2);
+  font-weight: 500;
+  transition: background var(--trans), color var(--trans);
+  user-select: none;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--sans);
+}
+.expand-trigger:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+.expand-trigger.open { color: var(--accent); border-bottom: 1px solid var(--border); }
+.expand-icon {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  color: var(--text3);
+  flex-shrink: 0;
+  transition: all var(--trans);
+}
+.expand-trigger.open .expand-icon {
+  background: rgba(200,169,110,0.12);
+  border-color: rgba(200,169,110,0.3);
+  color: var(--accent);
+}
+.expand-label { flex: 1; }
+.expand-hint {
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 400;
+  font-style: italic;
+}
+.expand-content {
+  display: none;
+  padding: 16px;
+}
+.expand-content.open { display: block; }
+
+/* ── Tooltip (术语说明) ── */
+.term {
+  border-bottom: 1px dashed rgba(200,169,110,0.4);
+  cursor: help;
+  color: var(--accent);
+  position: relative;
+}
+.term:hover { color: var(--accent2); }
+.tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.6;
+  width: 240px;
+  z-index: 1000;
+  font-style: normal;
+  font-weight: 300;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  pointer-events: none;
+}
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--border2);
+}
+.term:hover .tooltip { display: block; }
+.tooltip-name {
+  font-weight: 500;
+  color: var(--accent);
+  margin-bottom: 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Reading List ── */
+.reading-list {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.reading-list h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text3);
+  font-weight: 500;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.reading-list h3::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.paper-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.paper-item:last-child { border-bottom: none; }
+.paper-year {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  flex-shrink: 0;
+  padding-top: 2px;
+  width: 36px;
+}
+.paper-content { flex: 1; }
+.paper-title {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 400;
+  line-height: 1.45;
+  margin-bottom: 3px;
+}
+.paper-authors {
+  font-size: 11px;
+  color: var(--text3);
+}
+.paper-note {
+  font-size: 11px;
+  color: var(--teal);
+  margin-top: 3px;
+  font-style: italic;
+}
+.paper-link {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--accent);
+  padding-top: 2px;
+}
+
+/* ── Progress bar ── */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 260px; right: 0;
+  height: 2px;
+  background: var(--border);
+  z-index: 200;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--teal));
+  width: 0%;
+  transition: width 0.4s ease;
+}
+
+/* ── Stage Nav Bottom ── */
+.stage-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .progress-bar { left: 0; }
+  .hero, .stage-section { padding: 40px 24px; }
+  .hero h2 { font-size: 28px; }
+  .two-col, .three-col { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <h1>生成式AI<br>从Attention到Agent</h1>
+    <p>从Attention到Agent · 五阶段</p>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-stage">
+      <button class="nav-stage-btn active" onclick="showStage(0)" id="nav-0">
+        <span class="nav-dot"></span>
+        <span>序言与导读</span>
+      </button>
+    </div>
+    <div class="nav-stage">
+      <button class="nav-stage-btn" onclick="showStage(1)" id="nav-1">
+        <span class="nav-dot"></span>
+        <span>第一阶段：地基</span>
+      </button>
+    </div>
+    <div class="nav-stage">
+      <button class="nav-stage-btn" onclick="showStage(2)" id="nav-2">
+        <span class="nav-dot"></span>
+        <span>第二阶段：革命</span>
+      </button>
+    </div>
+    <div class="nav-stage">
+      <button class="nav-stage-btn" onclick="showStage(3)" id="nav-3">
+        <span class="nav-dot"></span>
+        <span>第三阶段：军备竞赛</span>
+      </button>
+    </div>
+    <div class="nav-stage">
+      <button class="nav-stage-btn" onclick="showStage(4)" id="nav-4">
+        <span class="nav-dot"></span>
+        <span>第四阶段：分化与深化</span>
+      </button>
+    </div>
+    <div class="nav-stage">
+      <button class="nav-stage-btn" onclick="showStage(5)" id="nav-5">
+        <span class="nav-dot"></span>
+        <span>第五阶段：现在与未来</span>
+      </button>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div>基于真实学习过程整理 · 2026</div>
+    <div style="margin-top:4px">非数学专业人士友好 · 保留英文技术术语</div>
+  </div>
+</aside>
+
+<!-- ── Progress bar ── -->
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+<!-- ── Main ── -->
+<main class="main">
+
+<!-- ── Stage 0: Intro ── -->
+<section class="stage-section active" id="stage-0">
+  <div class="hero-wrap"><div class="hero">
+    <div class="hero-tag">技术史 · 2026</div>
+    <h2>写给非工程师的<br><span>生成式AI技术史</span></h2>
+    <p>这不是一份学术综述，而是一条有顺序的理解路径。从2013年的Word2Vec出发，沿着每一代技术在回答前一代痛点的逻辑，走到今天的推理模型和Agent生态。</p>
+    <p>你不需要会写代码，也不需要深入的数学背景——理解算法为什么诞生、解决了什么问题，比记住公式更重要。</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="label">阅读时长</span>
+        <span class="value">约 2 小时（分阶段）</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">数学要求</span>
+        <span class="value">非数学专业人士友好</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">覆盖范围</span>
+        <span class="value">2013 → 2026</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">技术术语</span>
+        <span class="value">保留英文原名</span>
+      </div>
+    </div>
+    <div class="hero-timeline">
+      <div class="timeline-step" onclick="showStage(1)">
+        <div class="timeline-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-label">第一阶段<br>地基</div>
+      </div>
+      <div class="timeline-step" onclick="showStage(2)">
+        <div class="timeline-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-label">第二阶段<br>革命</div>
+      </div>
+      <div class="timeline-step" onclick="showStage(3)">
+        <div class="timeline-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-label">第三阶段<br>军备竞赛</div>
+      </div>
+      <div class="timeline-step" onclick="showStage(4)">
+        <div class="timeline-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-label">第四阶段<br>分化与深化</div>
+      </div>
+      <div class="timeline-step" onclick="showStage(5)">
+        <div class="timeline-connector"><div class="tl-dot"></div></div>
+        <div class="tl-label">第五阶段<br>现在与未来</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 40px 60px; max-width: 840px; margin: 0 auto;">
+    <h3 style="font-family:var(--serif);font-size:18px;color:var(--text);margin-bottom:16px;font-weight:600">怎么用这份材料</h3>
+    <div class="info-block">
+      <p>每个阶段都是一个步进器——顶部的标签切换步骤，每步对应一个核心概念。遇到<span style="border-bottom:1px dashed rgba(200,169,110,0.4);color:var(--accent)">金色下划线词</span>时悬停可查看术语简介。部分步骤末尾有「<strong>展开深入</strong>」节点，点击查看追问解答——这些内容不影响主线阅读，是为想深入的人准备的。</p>
+    </div>
+    <div class="info-block" style="margin-top:8px">
+      <p>每个阶段结尾有「延伸阅读」——如果你想在理解原理之后去读原始论文，这里列出了最值得读的几篇，并说明了读它的理由。</p>
+    </div>
+    <div class="success-block" style="margin-top:8px">
+      <p>建议按顺序走完。每个阶段开头的「核心问题」，是在进入之前值得带着的疑问；结尾的「带入下一阶段的问题」，是让你知道接下来要解答什么。这个节奏会让学习效率更高。</p>
+    </div>
+    <div style="margin-top:32px">
+      <button class="btn primary" onclick="showStage(1)" style="font-size:13px;padding:10px 24px">开始第一阶段 →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── Stage 1: Foundation ── -->
+<section class="stage-section" id="stage-1">
+<div class="stage-inner">
+  <div class="stage-header">
+    <div class="stage-number">01</div>
+    <div class="stage-header-text">
+      <h2>地基：为什么需要Transformer？</h2>
+      <div class="stage-era">2013–2017 · 建议用时：约20分钟</div>
+      <div class="stage-desc">在理解Transformer之前，你需要先感受到它要解决的痛苦。这个阶段从"词是什么"这个最基础的问题出发，沿着每一代技术的遗留痛点往前走。</div>
+    </div>
+  </div>
+
+  <div class="stepper" id="stepper-1">
+    <div class="step-pills" id="pills-1"></div>
+    <div id="panels-1">
+
+      <!-- Step 1-1 -->
+      <div class="step-panel" data-step="0">
+        <div class="step-era">起点 · 2013年前</div>
+        <div class="step-title">语言模型的原始问题：词是什么？</div>
+        <div class="info-block"><p>在深度学习之前，计算机处理文字的方式极为粗暴——每个词就是一个编号，"猫"是1号，"狗"是2号，"跑"是3号。这些编号之间没有任何关系，模型完全不知道"猫"和"狗"比"猫"和"跑"更相似。</p></div>
+        <div class="danger-block"><p>核心痛点：词与词之间的语义关系无法被表达。"国王"和"皇帝"在模型眼里跟"国王"和"苹果"一样陌生。</p></div>
+        <div class="accent-block"><p>想象你用电话号码来代表所有人，然后试图通过号码来判断谁是家人、谁是同事——完全行不通。</p></div>
+      </div>
+
+      <!-- Step 1-2 -->
+      <div class="step-panel" data-step="1">
+        <div class="step-era">第一步 · 2013年</div>
+        <div class="step-title">Word2Vec：把词变成向量空间里的点</div>
+        <div class="success-block"><p>解决方案：不用编号，改用一串数字（<span class="term">向量<span class="tooltip"><span class="tooltip-name">向量 Vector</span>一组有序数字，可以理解为空间里的一个点或一个方向。词向量就是用几百个数字来描述一个词的"语义位置"。</span></span>）来表示每个词。相似的词在这个空间里距离更近。最著名的结论："国王" - "男人" + "女人" ≈ "女王"。</p></div>
+        <div class="info-block"><p>核心思路：一个词的意思，可以从它的"邻居"推断出来。经常出现在"吃、喝、玩"旁边的词，和经常出现在"工作、会议、报告"旁边的词，语义必然不同。Word2Vec就是通过大量文本训练，让词自动找到自己在意义空间里的位置。</p></div>
+        <div class="danger-block"><p>遗留痛点：每个词只有一个固定的向量。"银行"（bank）不管是"河岸"还是"金融机构"，用的是同一个向量。语境被完全忽视了。</p></div>
+        <div><span class="tag">Mikolov et al., Google</span><span class="tag">无监督训练</span><span class="tag">词嵌入 Embedding</span></div>
+      </div>
+
+      <!-- Step 1-3 -->
+      <div class="step-panel" data-step="2">
+        <div class="step-era">第二步 · 2014–2016年</div>
+        <div class="step-title">RNN / LSTM：让模型开始"读句子"</div>
+        <div class="success-block"><p>解决方案：引入时序结构。模型像人读书一样，从左到右一个词一个词地读，每读一个词就更新内部的"记忆状态"，再读下一个词。<span class="term">LSTM<span class="tooltip"><span class="tooltip-name">LSTM</span>Long Short-Term Memory，长短期记忆网络。在RNN基础上增加了门控机制，让模型能选择性地"记住"或"遗忘"信息。</span></span>在<span class="term">RNN<span class="tooltip"><span class="tooltip-name">RNN</span>Recurrent Neural Network，循环神经网络。一种按时间顺序处理序列数据的神经网络，每一步的输出依赖上一步的状态。</span></span>基础上增加了门控机制，让模型能选择性地"记住"或"遗忘"信息。</p></div>
+        <div class="info-block"><p>真正的突破：Seq2Seq架构（2014年）。一个RNN负责把输入句子"压缩"成一个向量（Encoder），另一个RNN负责从这个向量"解压"出输出句子（Decoder）。这让机器翻译第一次真正可用。</p></div>
+
+        <!-- 展开节点：门控机制 -->
+        <div class="expand-node">
+          <button class="expand-trigger" onclick="toggleExpand(this)">
+            <div class="expand-icon">+</div>
+            <span class="expand-label">展开深入：LSTM门控机制是什么？</span>
+            <span class="expand-hint">遗忘门 / 输入门 / 输出门</span>
+          </button>
+          <div class="expand-content">
+            <div class="info-block"><p>LSTM的核心想法：与其用一张被动覆写的便利贴（RNN），不如同时维护两样东西——一条"长期记忆带"（cell state）和一张"工作便利贴"（hidden state）。用三扇"门"来精细控制信息流动。</p></div>
+            <div class="info-block" style="border-left:2px solid var(--teal)"><p><strong style="color:var(--teal)">遗忘门</strong>：根据当前词和上一时刻状态，决定长期记忆里哪些内容应该被削弱或清零。输出0到1之间的权重——0表示完全忘掉，1表示完整保留。<br><br>例子：读到主角"从单身变成有女朋友"，遗忘门把"单身"这条信息的权重归零。</p></div>
+            <div class="info-block" style="border-left:2px solid var(--purple)"><p><strong style="color:var(--purple)">输入门</strong>：决定当前读到的新信息，有多少值得写入长期记忆。同样输出0到1的权重，同时生成一个"候选内容"，两者相乘后更新到记忆带里。</p></div>
+            <div class="info-block" style="border-left:2px solid var(--coral)"><p><strong style="color:var(--coral)">输出门</strong>：长期记忆带里存着很多信息，但不是每一刻都需要全部用上。输出门决定：当前这个时刻，应该把哪部分记忆"激活"作为实际输出。</p></div>
+            <div class="success-block"><p>关键认知：这三扇门的"开合程度"不是人工设定的，是模型通过大量文本训练自己学出来的。RNN是被动遗忘（新信息把旧信息挤掉），LSTM是主动管理（自己决定记什么、忘什么、用什么）。</p></div>
+          </div>
+        </div>
+
+        <div class="danger-block"><p>遗留痛点①：无法并行计算。必须先读完第1个词才能读第2个词，训练极慢，无法充分利用GPU。</p></div>
+        <div class="danger-block" style="margin-top:0"><p>遗留痛点②：长程遗忘。句子太长时，开头的信息到结尾时已经"挤掉"了。</p></div>
+        <svg width="100%" viewBox="0 0 680 140" style="margin:12px 0;display:block" role="img" aria-label="RNN串行处理示意图">
+          <defs><marker id="arr-rnn" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#9a9690" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+          <text x="40" y="22" font-size="11" font-family="'Noto Sans SC',sans-serif" fill="#9a9690" font-weight="500">RNN — 必须串行，词与词之间存在依赖</text>
+          <rect x="40" y="34" width="60" height="32" rx="6" fill="#faf9f7" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="70" y="55" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#5a574f">The</text>
+          <line x1="100" y1="50" x2="126" y2="50" stroke="#9a9690" stroke-width="1" marker-end="url(#arr-rnn)"/>
+          <rect x="128" y="34" width="60" height="32" rx="6" fill="#faf9f7" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="158" y="55" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#5a574f">cat</text>
+          <line x1="188" y1="50" x2="214" y2="50" stroke="#9a9690" stroke-width="1" marker-end="url(#arr-rnn)"/>
+          <rect x="216" y="34" width="60" height="32" rx="6" fill="#faf9f7" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="246" y="55" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#5a574f">sat</text>
+          <line x1="276" y1="50" x2="302" y2="50" stroke="#9a9690" stroke-width="1" marker-end="url(#arr-rnn)"/>
+          <rect x="304" y="34" width="60" height="32" rx="6" fill="#faf9f7" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="334" y="55" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#5a574f">on</text>
+          <line x1="364" y1="50" x2="390" y2="50" stroke="#9a9690" stroke-width="1" marker-end="url(#arr-rnn)"/>
+          <rect x="392" y="34" width="72" height="32" rx="6" fill="#faf9f7" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="428" y="55" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#5a574f">the mat</text>
+          <text x="360" y="100" text-anchor="middle" font-size="11" font-family="'Noto Sans SC',sans-serif" fill="#b84020">必须等待前一个词处理完，才能处理下一个 → GPU大量核心闲置</text>
+        </svg>
+        <div class="accent-block"><p>想象你只能用一张便利贴来记笔记，读完一整本书。读到最后，最初的内容早就被新内容覆盖了。</p></div>
+      </div>
+
+      <!-- Step 1-4 -->
+      <div class="step-panel" data-step="3">
+        <div class="step-era">关键过渡 · 2015–2017年</div>
+        <div class="step-title">Attention机制雏形：给Decoder"回头看"的能力</div>
+        <div class="success-block"><p>解决方案：翻译某个词时，不只依赖那个"压缩向量"，而是让Decoder能动态地回头看Encoder处理过的每一个词，并决定现在该关注哪几个词。这个"权重分配"就是Attention。</p></div>
+        <div class="info-block"><p>经典例子：翻译"The cat sat on the mat"里的"sat"时，模型会自动重点关注"cat"（动作的主体）和"mat"（动作的地点），而不是均等地看所有词。</p></div>
+
+        <!-- 展开节点：Attention权重 -->
+        <div class="expand-node">
+          <button class="expand-trigger" onclick="toggleExpand(this)">
+            <div class="expand-icon">+</div>
+            <span class="expand-label">展开深入：权重是怎么计算的？Attention对RNN的改进逻辑？</span>
+            <span class="expand-hint">Query / Key / Value · 点积打分 · Seq2Seq瓶颈</span>
+          </button>
+          <div class="expand-content">
+            <div class="info-block"><p>权重的本质是：翻译当前这个词时，输入句子里每个词与它的"相关程度"。相关程度用向量的点积来衡量——两个向量方向越接近，点积越大，说明这两个词语义上"合拍"。</p></div>
+            <div class="info-block"><p><strong>三步计算过程：</strong><br>① <strong>打分</strong>：当前词（Query）与每个输入词（Key）做点积，得到一组原始分数。<br>② <strong>归一化</strong>：把分数丢进Softmax函数，变成加起来等于1的概率分布——这就是注意力权重。<br>③ <strong>加权求和</strong>：用权重对所有词的"值向量"（Value）加权求和，得到当前词的上下文表示。</p></div>
+            <div class="accent-block"><p>这些向量是模型训练出来的，不是人工定义的。模型通过海量文本自动学会了"动词和主语、动词和宾语之间的向量方向应该比较接近"这件事。</p></div>
+            <div class="info-block"><p><strong>Attention对RNN的具体改进：</strong><br>原始Seq2Seq把整个输入句子压缩成单个固定向量，无论输入多长都挤进去，信息损失严重。加了Attention之后，Decoder每次生成一个词时，都能回头查询Encoder保留的每一步隐藏状态，动态决定现在最需要关注哪几个输入词——相当于翻译时可以带着原文查，不再纯靠记忆。</p></div>
+            <div class="warning-block"><p>但RNN的串行结构问题依然存在。Attention只是改善了信息传递的质量，没有解决速度问题。这个根本矛盾直到Transformer才被解决。</p></div>
+          </div>
+        </div>
+
+        <div class="info-block"><p>这个想法由Bahdanau等人在2015年提出，当时是作为RNN的"补丁"加上去的。没有人预料到，三年后有人会问：如果把RNN完全去掉，只留下Attention，会怎样？</p></div>
+        <div><span class="tag">Bahdanau, 2015</span><span class="tag">Cross-Attention</span><span class="tag">Neural Machine Translation</span></div>
+      </div>
+
+      <!-- Step 1-5: Summary -->
+      <div class="step-panel" data-step="4">
+        <div class="step-era">阶段总结</div>
+        <div class="step-title">为什么要学这段"前史"？</div>
+        <div class="info-block"><p>理解这条演进线，你就能真正感受到2017年那篇论文标题"Attention is All You Need"的冲击力——它不是在说"Attention很有用"，而是在说"我们把RNN彻底扔掉了，只用Attention就够了，而且效果更好"。</p></div>
+        <div class="success-block"><p>带着这三个问题进入第二阶段：① 没有了时序结构，模型怎么知道词的顺序？ ② Self-Attention和之前的Attention有什么不同？ ③ 为什么去掉RNN之后反而可以并行计算了？</p></div>
+
+        <!-- Reading List -->
+        <div class="reading-list">
+          <h3>延伸阅读</h3>
+          <div class="paper-item">
+            <div class="paper-year">2013</div>
+            <div class="paper-content">
+              <div class="paper-title">Efficient Estimation of Word Representations in Vector Space</div>
+              <div class="paper-authors">Mikolov et al. · Google</div>
+              <div class="paper-note">Word2Vec原始论文。理解词向量的起点，数学部分可跳过，重点看动机和实验结果。</div>
+            </div>
+          </div>
+          <div class="paper-item">
+            <div class="paper-year">2014</div>
+            <div class="paper-content">
+              <div class="paper-title">Sequence to Sequence Learning with Neural Networks</div>
+              <div class="paper-authors">Sutskever, Vinyals, Le · Google</div>
+              <div class="paper-note">Seq2Seq架构原始论文。理解Encoder-Decoder范式的必读文章。</div>
+            </div>
+          </div>
+          <div class="paper-item">
+            <div class="paper-year">2015</div>
+            <div class="paper-content">
+              <div class="paper-title">Neural Machine Translation by Jointly Learning to Align and Translate</div>
+              <div class="paper-authors">Bahdanau, Cho, Bengio</div>
+              <div class="paper-note">Attention机制雏形的原始论文。图2的可视化attention权重矩阵非常直观，值得仔细看。</div>
+            </div>
+          </div>
+          <div class="paper-item">
+            <div class="paper-year">博文</div>
+            <div class="paper-content">
+              <div class="paper-title">Understanding LSTM Networks</div>
+              <div class="paper-authors">Christopher Olah · colah.github.io</div>
+              <div class="paper-note">公认最清晰的LSTM图文解释，配图极好。比任何论文都更容易理解门控机制。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end panels-1 -->
+    <div class="stepper-nav">
+      <button class="btn" id="prev-1" onclick="stepNav(1,-1)">← 上一步</button>
+      <span class="stepper-counter" id="counter-1">1 / 5</span>
+      <button class="btn primary" id="next-1" onclick="stepNav(1,1)">下一步 →</button>
+    </div>
+  </div><!-- end stepper-1 -->
+
+  <div class="stage-footer">
+    <button class="btn" onclick="showStage(0)">← 返回导读</button>
+    <button class="btn primary" onclick="showStage(2)">进入第二阶段：革命 →</button>
+  </div>
+</section>
+
+<!-- Stage 2 -->
+<section class="stage-section" id="stage-2">
+<div class="stage-inner">
+  <div class="stage-header">
+    <div class="stage-number">02</div>
+    <div class="stage-header-text">
+      <h2>革命：Attention is All You Need</h2>
+      <div class="stage-era">2017–2019 · 建议用时：约25分钟</div>
+      <div class="stage-desc">这一阶段是整个学习路径的核心支柱。Self-Attention、并行计算、位置编码、BERT vs GPT的分叉——这些是理解后续所有内容的"语言"。</div>
+    </div>
+  </div>
+
+  <div class="stepper" id="stepper-2">
+    <div class="step-pills" id="pills-2"></div>
+    <div id="panels-2">
+
+      <!-- 2-1 开场 -->
+      <div class="step-panel" data-step="0">
+        <div class="step-era">2017 · 开场</div>
+        <div class="step-title">"Attention is All You Need"——这个标题在宣告什么？</div>
+        <div class="info-block"><p>2017年，Google Brain的研究员发布了这篇论文。标题的冲击力在于它的否定：不是"Attention也很有用"，而是"只需要Attention，其他的（RNN、CNN）全都不需要了"。这在当时是一个极为大胆的主张——毕竟RNN统治NLP领域已经将近十年。</p></div>
+        <div class="success-block"><p>他们的核心发现：把RNN完全去掉，只用Self-Attention堆叠起来，不仅训练速度大幅提升（因为可以并行），翻译质量也超过了所有已有方法。</p></div>
+        <div class="accent-block"><p>就像有人说：我们一直用铁锹挖地，其实挖地这件事用不着铁锹柄，只需要铁锹头就够了，而且去掉柄之后还能同时用一百把铁锹头。</p></div>
+        <div class="info-block"><p>带着上一阶段的三个问题进入这一节：① 没有时序结构，模型怎么知道词的顺序？ ② Self-Attention和之前的Attention有什么不同？ ③ 为什么去掉RNN就可以并行了？</p></div>
+      </div>
+
+      <!-- 2-2 Self-Attention -->
+      <div class="step-panel" data-step="1">
+        <div class="step-era">核心突破一</div>
+        <div class="step-title">Self-Attention：一句话里的词，互相做Attention</div>
+        <div class="info-block"><p>之前的Attention是跨语言的：英文词（Decoder）去查英文输入词（Encoder）的权重。<span class="term">Self-Attention<span class="tooltip"><span class="tooltip-name">Self-Attention</span>自注意力机制。同一句话里每个词都去查自己这句话里所有其他词的权重，Query、Key、Value全来自同一句话。</span></span>的"Self"意味着：同一句话里的每个词，都去查自己这句话里所有其他词的权重——包括自己。</p></div>
+        <div class="success-block"><p>这解决了什么问题？语言里充满了需要跨越距离才能理解的依赖关系。"The animal didn't cross the street because it was too tired." 这里的"it"指的是"animal"还是"street"？人类一眼就知道，但距离很远。Self-Attention让"it"可以直接和"animal"建立连接，不需要经过中间所有词的传递。</p></div>
+        <div class="accent-block"><p>RNN的方式：消息从第1个词口耳相传到第10个词，传到最后难免失真。Self-Attention的方式：开一个所有词都在场的会议，每个词可以直接和任何其他词对话，不需要中间人。</p></div>
+
+        <!-- 展开：Attention vs Self-Attention -->
+        <div class="expand-node">
+          <button class="expand-trigger" onclick="toggleExpand(this)">
+            <div class="expand-icon">+</div>
+            <span class="expand-label">展开深入：Attention和Self-Attention到底有什么区别？</span>
+            <span class="expand-hint">Q/K/V来源不同 · Cross-Attention vs Self-Attention</span>
+          </button>
+          <div class="expand-content">
+            <div class="info-block"><p>两种机制底层都是同一套Q/K/V机制（打分→Softmax→加权求和），区别只在于这三个角色"从哪里来"：</p></div>
+            <div class="info-block" style="border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+              <p><strong>旧版Attention（Cross-Attention）</strong><br>Query来自：Decoder（正在生成的词）<br>Key / Value来自：Encoder（另一句话）<br>用途：翻译——中文词去查对应的英文词<br>发生在：两句话之间</p>
+            </div>
+            <div class="info-block" style="border-left:3px solid var(--teal);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+              <p><strong>Self-Attention</strong><br>Query来自：句子里某个词<br>Key / Value来自：同一句话里所有词<br>用途：理解上下文——"it"到底指什么<br>发生在：一句话内部</p>
+            </div>
+            <div class="info-block"><p>值得注意：Transformer里其实两种都有。Encoder里全是Self-Attention（英文句内部的词互相看）；Decoder里有Self-Attention（已生成的中文词互相看），也有Cross-Attention（中文词去查英文Encoder的结果）。GPT只用Decoder，所以只有Self-Attention——它生成文字时，就是让已生成的词互相看，再预测下一个词。</p></div>
+            <div class="success-block"><p>一句话记住区别：旧版Attention是"跨桌对话"（翻译桌的人向原文桌借信息）；Self-Attention是"圆桌会议"（同一桌的所有词彼此直接交换信息）。</p></div>
+          </div>
+        </div>
+
+        <div class="info-block"><p>计算方式和第一阶段学的Attention完全一样（Query-Key-Value，点积打分，Softmax归一化），只不过Query、Key、Value都来自同一句话，而不是分属Encoder和Decoder两端。</p></div>
+      </div>
+
+      <!-- 2-3 并行计算 -->
+      <div class="step-panel" data-step="2">
+        <div class="step-era">核心突破二</div>
+        <div class="step-title">为什么去掉RNN就能并行？</div>
+        <div class="danger-block"><p>RNN的串行根源：处理第N个词时，必须先有第N-1个词的隐藏状态。这个"必须等待"是结构上决定的，无法绕过。无论GPU有多少核，RNN都只能一个词一个词地排队处理。</p></div>
+        <div class="success-block"><p>Self-Attention的并行性：计算每个词的Attention时，需要的全部信息（所有词的向量）在一开始就都有了。"cat"和"mat"的相似度计算，和"the"和"sat"的相似度计算，完全互不依赖，可以同时进行。</p></div>
+        <svg width="100%" viewBox="0 0 680 190" style="margin:12px 0;display:block" role="img" aria-label="RNN串行与Transformer并行对比">
+          <defs><marker id="arr-p" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#9a9690" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+          <text x="148" y="18" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#5a574f" font-weight="500">RNN（串行）</text>
+          <text x="490" y="18" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#5a574f" font-weight="500">Transformer（并行）</text>
+          <line x1="330" y1="8" x2="330" y2="185" stroke="#e8e5e0" stroke-width="1" stroke-dasharray="4 3"/>
+          <rect x="40" y="30" width="52" height="30" rx="6" fill="#faf9f7" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="66" y="50" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#5a574f">词1</text>
+          <line x1="92" y1="45" x2="112" y2="45" stroke="#9a9690" stroke-width="1" marker-end="url(#arr-p)"/>
+          <rect x="114" y="30" width="52" height="30" rx="6" fill="#faf9f7" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="140" y="50" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#5a574f">词2</text>
+          <line x1="166" y1="45" x2="186" y2="45" stroke="#9a9690" stroke-width="1" marker-end="url(#arr-p)"/>
+          <rect x="188" y="30" width="52" height="30" rx="6" fill="#faf9f7" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="214" y="50" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#5a574f">词3</text>
+          <line x1="240" y1="45" x2="260" y2="45" stroke="#9a9690" stroke-width="1" marker-end="url(#arr-p)"/>
+          <rect x="262" y="30" width="52" height="30" rx="6" fill="#faf9f7" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="288" y="50" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#5a574f">词4</text>
+          <text x="166" y="95" text-anchor="middle" font-size="11" font-family="'Noto Sans SC',sans-serif" fill="#b84020">依次排队 → 时间 = 4步</text>
+          <rect x="356" y="30" width="52" height="30" rx="6" fill="#e6f4ee" stroke="#1a6e52" stroke-width="1"/>
+          <text x="382" y="50" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#0d4a36">词1</text>
+          <rect x="422" y="30" width="52" height="30" rx="6" fill="#e6f4ee" stroke="#1a6e52" stroke-width="1"/>
+          <text x="448" y="50" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#0d4a36">词2</text>
+          <rect x="488" y="30" width="52" height="30" rx="6" fill="#e6f4ee" stroke="#1a6e52" stroke-width="1"/>
+          <text x="514" y="50" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#0d4a36">词3</text>
+          <rect x="554" y="30" width="52" height="30" rx="6" fill="#e6f4ee" stroke="#1a6e52" stroke-width="1"/>
+          <text x="580" y="50" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#0d4a36">词4</text>
+          <line x1="382" y1="60" x2="382" y2="80" stroke="#1a6e52" stroke-width="1" marker-end="url(#arr-p)"/>
+          <line x1="448" y1="60" x2="448" y2="80" stroke="#1a6e52" stroke-width="1" marker-end="url(#arr-p)"/>
+          <line x1="514" y1="60" x2="514" y2="80" stroke="#1a6e52" stroke-width="1" marker-end="url(#arr-p)"/>
+          <line x1="580" y1="60" x2="580" y2="80" stroke="#1a6e52" stroke-width="1" marker-end="url(#arr-p)"/>
+          <text x="480" y="95" text-anchor="middle" font-size="11" font-family="'Noto Sans SC',sans-serif" fill="#0d4a36">同时处理 → 时间 = 1步，GPU全核利用</text>
+        </svg>
+        <div class="info-block"><p>实际影响：这个并行性让训练规模从"几百万参数"跨越到"几百亿参数"成为可能——因为时间不再随句子长度线性增长。这是后来GPT-3能有1750亿参数的技术前提。</p></div>
+      </div>
+
+      <!-- 2-4 位置编码 -->
+      <div class="step-panel" data-step="3">
+        <div class="step-era">核心突破三</div>
+        <div class="step-title">位置编码：没有了RNN，模型怎么知道词序？</div>
+        <div class="danger-block"><p>Self-Attention有一个盲点：它本身对词序完全不敏感。"猫追狗"和"狗追猫"，如果只看词与词之间的相似度，得到的Attention权重是完全一样的。这在RNN里不是问题（天然按顺序读），但Transformer里必须手动解决。</p></div>
+        <div class="success-block"><p>解决方案：<span class="term">位置编码<span class="tooltip"><span class="tooltip-name">位置编码 Positional Encoding</span>在词向量里注入位置信息的方法。原始Transformer用正弦余弦函数生成，后来的模型多用可学习的位置编码或RoPE。</span></span>（Positional Encoding）。在把词送入Transformer之前，给每个词的向量加上一个"位置信号"——第1个词加一种信号，第2个词加另一种信号，以此类推。</p></div>
+        <div class="accent-block"><p>就像给一排座位编号。每把椅子（词向量）本身长得一样，但贴上"第3排第5座"的标签（位置编码）之后，模型就能区分它们了。</p></div>
+        <div class="info-block"><p>原始论文用数学函数（正弦余弦）来生成位置编码，后来的模型（如BERT）改用"可学习的位置编码"——让模型自己训练出最合适的位置表示。位置编码的设计方式在后续各家大模型里有很多演化，第四阶段讲长上下文时会再碰到（RoPE旋转位置编码）。</p></div>
+        <div><span class="tag">Positional Encoding</span><span class="tag">正弦余弦函数</span><span class="tag">RoPE（第四阶段）</span></div>
+      </div>
+
+      <!-- 2-5 Encoder vs Decoder -->
+      <div class="step-panel" data-step="4">
+        <div class="step-era">架构全貌</div>
+        <div class="step-title">Transformer的两种用法：Encoder vs Decoder</div>
+        <div class="info-block"><p>原始Transformer论文设计了Encoder-Decoder结构（用于翻译），但后来的模型发现可以拆开来单独用，催生了两条路线——这直接决定了BERT和GPT的根本差异。</p></div>
+        <div class="two-col">
+          <div class="col-card">
+            <div class="col-label">Encoder路线</div>
+            <p>每个词可以同时看左边和右边的词（双向Attention）。适合"理解"任务：给一段话，判断情感、提取信息、回答问题。代表：BERT。</p>
+          </div>
+          <div class="col-card">
+            <div class="col-label">Decoder路线</div>
+            <p>每个词只能看左边已经生成的词（单向Attention）。适合"生成"任务：预测下一个词，写文章，续写故事。代表：GPT系列。</p>
+          </div>
+        </div>
+        <div class="accent-block"><p>Encoder像读者：把整篇文章读完再理解意思，可以前后参照。Decoder像作家：只能看已经写下的内容，一个词一个词往前推进，不能"剧透"自己还没写的部分。</p></div>
+        <div class="warning-block"><p>为什么Decoder不能"看右边"？因为在生成时，右边的词还不存在。训练时为了模拟这个约束，会用"遮蔽"（Masking）把右边的词盖住，强迫模型只用左边信息来预测当前词。</p></div>
+      </div>
+
+      <!-- 2-6 BERT vs GPT -->
+      <div class="step-panel" data-step="5">
+        <div class="step-era">2018–2019 · 第一次分叉</div>
+        <div class="step-title">BERT vs GPT-1：同一个Transformer，两种哲学</div>
+        <div class="info-block"><p>Transformer论文发表后一年内，Google和OpenAI各自用它做出了截然不同的东西，分别定义了往后数年NLP的两条主线。</p></div>
+        <div class="two-col">
+          <div class="col-card">
+            <div class="col-label">BERT（Google，2018）</div>
+            <p>只用Encoder。训练方式：随机遮住句子里15%的词，让模型猜被遮住的是什么（完形填空）。因为可以看两侧，理解任务极强。但不擅长生成——它只会"填空"，不会"续写"。</p>
+          </div>
+          <div class="col-card">
+            <div class="col-label">GPT-1（OpenAI，2018）</div>
+            <p>只用Decoder。训练方式：预测下一个词（语言模型）。因为只看左侧，理解任务稍弱，但天然擅长生成连贯文本。GPT-2、GPT-3、ChatGPT都是这条路走下来的。</p>
+          </div>
+        </div>
+        <div class="success-block"><p>两者的共同突破：预训练+微调范式。先在海量文本上预训练一个通用模型，再用少量特定任务数据微调（Fine-tune）。这让"一个模型适配多种任务"第一次成为现实，打破了之前"每个任务单独训练一个模型"的格局。</p></div>
+        <div class="info-block"><p>BERT和GPT分叉的意义：这不只是技术选择，而是两种对"语言模型能做什么"的不同判断。Google认为理解是核心，OpenAI认为生成是未来。五年后，ChatGPT的爆发证明OpenAI押对了方向——但这在2018年完全不明朗。</p></div>
+        <div><span class="tag">预训练 Pre-training</span><span class="tag">微调 Fine-tuning</span><span class="tag">迁移学习 Transfer Learning</span></div>
+      </div>
+
+      <!-- 2-7 阶段总结 -->
+      <div class="step-panel" data-step="6">
+        <div class="step-era">阶段总结</div>
+        <div class="step-title">第二阶段的核心收获</div>
+        <div class="success-block"><p>这一阶段你建立的最重要的直觉：Transformer不是"更好的RNN"，而是一套完全不同的信息处理方式——所有词同时互相看，通过Self-Attention直接建立任意距离的连接，位置信息单独注入，训练可以完全并行。</p></div>
+        <div class="info-block"><p>BERT和GPT的分叉是这个阶段最值得记住的历史节点——同一个架构，因为训练方向和遮蔽方式的不同，走出了理解路线和生成路线。后续所有大模型都是在这两条路上的不同取舍。</p></div>
+        <div class="warning-block"><p>带入第三阶段的三个问题：① GPT-2已经能写出流畅文章，为什么GPT-3才被认为是真正的突破？"规模"到底改变了什么？ ② 预训练出来的模型"会说话"，但怎么让它"听人话"？ ③ 从GPT-3到ChatGPT，中间发生了什么？</p></div>
+
+        <div class="reading-list">
+          <h3>延伸阅读</h3>
+          <div class="paper-item">
+            <div class="paper-year">2017</div>
+            <div class="paper-content">
+              <div class="paper-title">Attention Is All You Need</div>
+              <div class="paper-authors">Vaswani et al. · Google Brain</div>
+              <div class="paper-note">Transformer原始论文。Figure 1的架构图和Section 3.2的Scaled Dot-Product Attention是核心，其余可选读。</div>
+            </div>
+          </div>
+          <div class="paper-item">
+            <div class="paper-year">2018</div>
+            <div class="paper-content">
+              <div class="paper-title">BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding</div>
+              <div class="paper-authors">Devlin et al. · Google</div>
+              <div class="paper-note">BERT原始论文。重点读Section 3（预训练任务）和实验结果，理解双向理解的价值。</div>
+            </div>
+          </div>
+          <div class="paper-item">
+            <div class="paper-year">博文</div>
+            <div class="paper-content">
+              <div class="paper-title">The Illustrated Transformer</div>
+              <div class="paper-authors">Jay Alammar · jalammar.github.io</div>
+              <div class="paper-note">公认最好的Transformer图文解释。动画展示Q/K/V计算过程，强烈推荐在读论文之前先看这篇。</div>
+            </div>
+          </div>
+          <div class="paper-item">
+            <div class="paper-year">博文</div>
+            <div class="paper-content">
+              <div class="paper-title">The Illustrated BERT, ELMo, and co.</div>
+              <div class="paper-authors">Jay Alammar · jalammar.github.io</div>
+              <div class="paper-note">同系列，对比讲解预训练范式的演进，把BERT和GPT的差异讲得非常清楚。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end panels-2 -->
+    <div class="stepper-nav">
+      <button class="btn" id="prev-2" onclick="stepNav(2,-1)">← 上一步</button>
+      <span class="stepper-counter" id="counter-2">1 / 7</span>
+      <button class="btn primary" id="next-2" onclick="stepNav(2,1)">下一步 →</button>
+    </div>
+  </div><!-- end stepper-2 -->
+
+  <div class="stage-footer">
+    <button class="btn" onclick="showStage(1)">← 第一阶段</button>
+    <button class="btn primary" onclick="showStage(3)">第三阶段：军备竞赛 →</button>
+  </div>
+</div>
+</section>
+
+<section class="stage-section" id="stage-3">
+<div class="stage-inner">
+  <div class="stage-header">
+    <div class="stage-number">03</div>
+    <div class="stage-header-text">
+      <h2>军备竞赛：大模型时代</h2>
+      <div class="stage-era">2020–2022 · 建议用时：约25分钟</div>
+      <div class="stage-desc">规模涌现、RLHF对齐、从GPT-3到ChatGPT的产品化路径。以及同期爆发的扩散模型——另一条完全不同的生成式AI技术路线。</div>
+    </div>
+  </div>
+
+  <div class="stepper" id="stepper-3">
+    <div class="step-pills" id="pills-3"></div>
+    <div id="panels-3">
+
+      <!-- 3-1 GPT-3涌现 -->
+      <div class="step-panel" data-step="0">
+        <div class="step-era">2020 · GPT-3</div>
+        <div class="step-title">规模的魔法：更大不只是更好，而是"突然会了"</div>
+        <div class="info-block"><p>GPT-2（2019年）已经能写出流畅的文章，但它的能力基本上是"量的积累"。GPT-3（2020年）发生的事情不一样：它不只是更流畅，而是出现了一批之前完全没有的能力，而这些能力没有被专门训练过。</p></div>
+        <div class="success-block"><p>最震惊研究者的发现：GPT-3可以做"few-shot learning"——给它看几个例子，它就能理解任务并完成。比如给它看三道数学题和答案，它就能解第四道。这个能力没人教过它，是从规模里"涌现"出来的。</p></div>
+        <div class="accent-block"><p>想象一个只靠读书自学的人。读了1000本书，能流利表达；读了100万本书，突然开始能做逻辑推理、写代码、理解类比——没有人专门教过他这些，但书读到某个量级，这些能力就自动出现了。</p></div>
+        <div class="two-col">
+          <div class="col-card">
+            <div class="col-label">参数规模对比</div>
+            <p>GPT-2：15亿参数<br>GPT-3：1750亿参数<br>增长约 117 倍</p>
+          </div>
+          <div class="col-card">
+            <div class="col-label">训练数据对比</div>
+            <p>GPT-2：40GB 文本<br>GPT-3：570GB 文本<br>增长约 14 倍</p>
+          </div>
+        </div>
+        <div class="warning-block"><p>但GPT-3有一个根本问题：它很"博学"，但不"听话"。给它一个问题，它可能会继续续写而不是回答，或者给出有害内容。它是一个强大的文本预测机器，不是一个有用的助手。</p></div>
+      </div>
+
+      <!-- 3-2 规模定律与涌现 -->
+      <div class="step-panel" data-step="1">
+        <div class="step-era">涌现能力</div>
+        <div class="step-title">为什么"更大"会带来"新能力"？Scaling Law与涌现</div>
+        <div class="info-block"><p>OpenAI研究者发现了一条规律（<span class="term">Scaling Law<span class="tooltip"><span class="tooltip-name">Scaling Law 规模定律</span>模型性能随参数量、数据量、算力的增加呈现可预测的幂律提升。由Kaplan et al. 2020年提出。</span></span>）：模型性能随参数量、数据量、算力的增加呈现可预测的幂律提升。但在某些能力上，提升不是平滑的——而是在某个规模阈值之后，能力突然从"几乎不会"跳到"相当擅长"。这就是涌现（Emergence）。</p></div>
+        <div class="info-block"><p>为什么会涌现？目前没有完全确定的答案，但主流解释是：复杂能力由多个基础能力组合而成，只有每个基础能力都达到足够水平，组合才能成立。就像齿轮——每个齿轮都要足够精准，整个机械才能运转；参数不够时所有齿轮都在打滑，参数到了某个量级所有齿轮突然咬合。</p></div>
+        <div class="warning-block"><p>这个发现的意义：它给了"暴力堆规模"一个理论支撑。研究者开始相信，只要资源够，更大的模型会带来更多意外惊喜。这直接引发了2020–2023年各大公司的"军备竞赛"。</p></div>
+        <div><span class="tag">Scaling Law</span><span class="tag">Kaplan et al. 2020</span><span class="tag">涌现 Emergence</span><span class="tag">few-shot learning</span></div>
+      </div>
+
+      <!-- 3-3 对齐问题 -->
+      <div class="step-panel" data-step="2">
+        <div class="step-era">对齐问题</div>
+        <div class="step-title">GPT-3会说话，但不听话——什么是"对齐"？</div>
+        <div class="danger-block"><p>预训练模型的本质：它的训练目标只有一个——预测下一个词。它在互联网上学到了人类写的一切，包括谣言、偏见、有害内容。当你问它"怎么制作炸弹"，它可能会认真回答，因为互联网上确实有这类文字，而它的任务就是续写。</p></div>
+        <div class="info-block"><p>"<span class="term">对齐<span class="tooltip"><span class="tooltip-name">对齐 Alignment</span>让模型的行为和人类的真实意图、价值观保持一致。不只是"能回答问题"，而是"按照人希望的方式回答"——有帮助、无害、诚实（HHH原则）。</span></span>"（Alignment）的含义：让模型的行为和人类的真实意图、价值观保持一致。不只是"能回答问题"，而是"按照人希望的方式回答问题"——有帮助、无害、诚实。这三个词后来被Anthropic总结为HHH原则：Helpful、Harmless、Honest。</p></div>
+        <div class="accent-block"><p>预训练模型像一个读遍了所有书的天才，但完全没有社会化——可能随口说出极端观点，答非所问，或者把错误信息说得无比自信。对齐就是给这个天才做"社会化训练"，让他知道在什么场合该说什么、不该说什么。</p></div>
+        <div class="two-col">
+          <div class="col-card">
+            <div class="col-label">对齐失败的表现</div>
+            <p>回答有害问题 / 输出偏见内容 / 一本正经地幻觉 / 答非所问直接续写 / 拒绝合理请求</p>
+          </div>
+          <div class="col-card">
+            <div class="col-label">对齐的目标</div>
+            <p>理解用户真实意图 / 拒绝有害请求 / 承认不确定性 / 保持有帮助的态度 / 符合人类价值观</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-4 RLHF三步 -->
+      <div class="step-panel" data-step="3">
+        <div class="step-era">核心技术</div>
+        <div class="step-title">RLHF：用人类反馈来训练"听话"的模型</div>
+        <div class="info-block"><p><span class="term">RLHF<span class="tooltip"><span class="tooltip-name">RLHF</span>Reinforcement Learning from Human Feedback，基于人类反馈的强化学习。OpenAI用于InstructGPT和ChatGPT的核心对齐技术，分三步完成。</span></span>（Reinforcement Learning from Human Feedback，基于人类反馈的强化学习）是2022年OpenAI用在InstructGPT上、随后用于ChatGPT的核心技术。它分三步，每步解决一个具体问题。</p></div>
+        <svg width="100%" viewBox="0 0 680 80" style="margin:12px 0;display:block" role="img" aria-label="RLHF三步流程图">
+          <defs><marker id="arr-rlhf" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#9a9690" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+          <rect x="40" y="20" width="160" height="40" rx="8" fill="#e6f4ee" stroke="#1a6e52" stroke-width="1"/>
+          <text x="120" y="37" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#0d4a36" font-weight="500">第一步：SFT</text>
+          <text x="120" y="53" text-anchor="middle" font-size="11" font-family="'Noto Sans SC',sans-serif" fill="#0d4a36">人工示例监督微调</text>
+          <line x1="200" y1="40" x2="228" y2="40" stroke="#9a9690" stroke-width="1" marker-end="url(#arr-rlhf)"/>
+          <rect x="230" y="20" width="180" height="40" rx="8" fill="#f5ecd8" stroke="#9a6008" stroke-width="1"/>
+          <text x="320" y="37" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#5a3800" font-weight="500">第二步：训练奖励模型</text>
+          <text x="320" y="53" text-anchor="middle" font-size="11" font-family="'Noto Sans SC',sans-serif" fill="#5a3800">人类排序 → 学习偏好</text>
+          <line x1="410" y1="40" x2="438" y2="40" stroke="#9a9690" stroke-width="1" marker-end="url(#arr-rlhf)"/>
+          <rect x="440" y="20" width="200" height="40" rx="8" fill="#ede8f8" stroke="#5a3fb8" stroke-width="1"/>
+          <text x="540" y="37" text-anchor="middle" font-size="12" font-family="'Noto Sans SC',sans-serif" fill="#3a2080" font-weight="500">第三步：PPO强化学习</text>
+          <text x="540" y="53" text-anchor="middle" font-size="11" font-family="'Noto Sans SC',sans-serif" fill="#3a2080">奖励模型当裁判，持续优化</text>
+        </svg>
+        <div class="info-block" style="border-left:3px solid var(--teal);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+          <p><strong>第一步：监督微调（SFT）</strong><br>人工标注员写出"好的对话示例"（问题+理想答案），用这些数据直接微调预训练模型。目的是让模型从"文本续写机器"变成"对话助手"的基本形态。但人工标注量有限，光靠这步效果不够。</p>
+        </div>
+        <div class="info-block" style="border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+          <p><strong>第二步：训练奖励模型（RM）</strong><br>让模型对同一个问题生成多个不同回答，人工标注员对这些回答排序。用排序数据训练一个"评分模型"（奖励模型），它学会了模拟人类的偏好判断——能给任意回答打分。</p>
+        </div>
+        <div class="info-block" style="border-left:3px solid var(--teal);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+          <p><strong>第三步：强化学习优化（PPO）</strong><br>用奖励模型当"裁判"，让语言模型不断生成回答、接受评分、根据评分调整参数。模型学会往高分方向走——即更符合人类偏好的方向。整个过程不需要人工持续参与，奖励模型代替了人工评分。</p>
+        </div>
+
+        <!-- 展开：奖励模型原理 -->
+        <div class="expand-node">
+          <button class="expand-trigger" onclick="toggleExpand(this)">
+            <div class="expand-icon">+</div>
+            <span class="expand-label">展开深入：奖励模型怎么"学会"人类偏好的？</span>
+            <span class="expand-hint">从比较中学习 · 奖励黑客 · DPO/CAI改进方向</span>
+          </button>
+          <div class="expand-content">
+            <div class="info-block"><p>奖励模型不是被人工写规则定义的，而是从大量人类的"比较判断"里学出来的——"这个回答比那个回答更好"。几十万对这样的比较之后，模型自动归纳出什么样的回答是好的。这叫"从比较中学习"（Learning from Comparisons），比让人直接打分（1-10分）更稳定，因为相对判断比绝对打分更一致。</p></div>
+            <div class="warning-block"><p><strong>奖励黑客（Reward Hacking）</strong>：语言模型在强化学习阶段会找到"欺骗"奖励模型的方式——生成一种奖励模型高分、但人类实际上不满意的回答风格。比如过度冗长但面面俱到、或者过度讨好用户。这就是为什么需要在PPO阶段加"KL惩罚项"，防止模型偏离预训练版本太远。</p></div>
+            <div class="danger-block"><p>RLHF的根本局限：奖励模型学的是"看起来好"，不是"真的对"。标注员无法验证技术类回答的准确性，只能凭感觉判断哪个"更像正确答案"。结果：模型学会了用自信的语气表达，即使内容是错的。这是幻觉问题的根源之一。</p></div>
+            <div class="info-block"><p><strong>后续改进方向：</strong><br>· <strong>DPO（直接偏好优化，2023）</strong>：跳过单独训练奖励模型这一步，直接用偏好数据优化语言模型本身，更简洁稳定。Llama系列和很多开源模型采用。<br>· <strong>宪法AI / CAI（Anthropic）</strong>：给模型一套"原则"（宪法），让模型自己批评和修改自己的回答，减少对人工标注的依赖。Claude系列采用。<br>· <strong>RLAIF</strong>：用更强的AI模型替代部分人工标注员给较弱模型的回答打分，大幅降低标注成本。</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-5 ChatGPT诞生 -->
+      <div class="step-panel" data-step="4">
+        <div class="step-era">2022年11月</div>
+        <div class="step-title">ChatGPT：从实验室技术到改变世界的产品</div>
+        <div class="info-block"><p>ChatGPT本质上是GPT-3.5（在GPT-3基础上继续训练的版本）加上RLHF对齐。技术上没有革命性突破，但产品化的方式不一样——它被包装成任何人都能直接使用的对话界面，而不是API接口。</p></div>
+        <div class="success-block"><p>为什么爆发？三个因素叠加：① 模型够强——GPT-3.5已经能处理复杂任务；② 对齐够好——RLHF让它"听话"，普通用户不会被奇怪的回答吓跑；③ 门槛够低——不需要懂API，打开网页就能用。发布五天用户破百万，两个月破亿，是人类历史上用户增长最快的产品。</p></div>
+        <div class="two-col">
+          <div class="col-card">
+            <div class="col-label">GPT-3（2020）的样子</div>
+            <p>问："今天天气怎么样？"<br>答："今天天气怎么样？北京今天晴，气温……"（续写模式，答非所问）</p>
+          </div>
+          <div class="col-card">
+            <div class="col-label">ChatGPT（2022）的样子</div>
+            <p>问："今天天气怎么样？"<br>答："我没有实时天气数据，但你可以查天气预报应用。你在哪个城市？"（理解意图，给出有用回应）</p>
+          </div>
+        </div>
+        <div class="info-block"><p>同期另外两件重要的事：① 扩散模型（Diffusion Model）在图像生成上大爆发——Stable Diffusion、DALL-E 2、Midjourney相继出现，说明Transformer之外还有另一条生成式AI的技术路线；② Google内部其实更早有类似技术（LaMDA），但因为担心声誉风险迟迟不敢发布，被ChatGPT打了个措手不及。</p></div>
+
+        <!-- 展开：扩散模型 -->
+        <div class="expand-node">
+          <button class="expand-trigger" onclick="toggleExpand(this)">
+            <div class="expand-icon">+</div>
+            <span class="expand-label">展开深入：扩散模型是怎么工作的？</span>
+            <span class="expand-hint">前向加噪 · 逆向去噪 · CLIP文字控制 · 2022年爆发原因</span>
+          </button>
+          <div class="expand-content">
+            <div class="success-block"><p>扩散模型的核心想法来自物理学中的扩散过程：把一张清晰图片一步步加入随机噪声，直到变成一团随机噪点（前向扩散）。然后训练一个神经网络，学会把这个过程逆转：从一团噪点，一步步去噪，最终还原出清晰图像（逆向扩散）。</p></div>
+            <div class="info-block"><p>神经网络的任务不是"直接画出图像"，而是在每一小步里预测"当前这张图里混入了多少噪声"，然后把那些噪声减掉，图像就会稍微清晰一点。重复几十到几百步，从一团噪点逐渐浮现出完整图像。</p></div>
+            <div class="info-block"><p><strong>怎么用文字控制生成结果？——CLIP的作用</strong><br>CLIP（对比语言-图像预训练）用海量"图片+描述文字"配对数据训练，让它学会把图片和文字映射到同一个向量空间里——相关的图文对在空间中距离近。把CLIP和扩散模型结合：在每一步去噪时，不是随机往某个方向走，而是让CLIP引导去噪方向往"和输入文字越来越相关"的图像走。</p></div>
+            <div class="info-block"><p><strong>为什么2022年集中爆发？三件事同时成熟：</strong><br>① <strong>潜在扩散模型（LDM）</strong>：先把图像"压缩"到低维潜在空间做扩散，再解压回像素。计算量减少数十倍，普通GPU几秒就能生成一张图。Stable Diffusion基于此。<br>② <strong>CLIP开放权重</strong>：OpenAI 2021年发布CLIP并开放预训练权重，所有人都能用现成的文图对齐能力。<br>③ <strong>Stable Diffusion完全开源</strong>：2022年8月开源权重，引爆全球开发者社区，几周内出现数千个变体和插件。</p></div>
+            <div class="warning-block"><p>和LLM的关系：扩散模型和大语言模型是两条平行的技术路线，不是竞争关系。2023年后两者开始融合——LLM开始能处理图像，扩散模型引入Transformer架构（DiT）。Sora就是Transformer+扩散模型的结合体。</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-6 阶段总结 -->
+      <div class="step-panel" data-step="5">
+        <div class="step-era">阶段总结</div>
+        <div class="step-title">第三阶段的核心收获</div>
+        <div class="success-block"><p>这一阶段最重要的两个认知：第一，"规模"不只是量变，到了阈值会发生质变——这个发现改变了整个行业的研究范式，从"设计更聪明的算法"转向"堆更大的模型"。第二，预训练和对齐是两件完全不同的事——前者给模型知识和能力，后者让模型知道怎么用这些能力服务人类。</p></div>
+        <div class="info-block"><p>ChatGPT爆发之后，所有科技公司都意识到大语言模型不是学术玩具，而是下一个平台级技术。2023年成为各家公司密集发布大模型的一年——Google的Bard/Gemini、Meta的Llama、Anthropic的Claude、百度的文心……</p></div>
+        <div class="warning-block"><p>带入第四阶段的三个问题：① 各家模型表面上都是"Transformer + 对齐"，底层技术路线有什么本质差异？ ② DeepSeek用远少于OpenAI的资源做出了有竞争力的模型，它做了什么不一样的事？ ③ "更聪明"这件事，除了堆规模还有没有别的路？</p></div>
+
+        <div class="reading-list">
+          <h3>延伸阅读</h3>
+          <div class="paper-item">
+            <div class="paper-year">2020</div>
+            <div class="paper-content">
+              <div class="paper-title">Language Models are Few-Shot Learners</div>
+              <div class="paper-authors">Brown et al. · OpenAI</div>
+              <div class="paper-note">GPT-3原始论文。Section 2（模型描述）可跳过，重点读Introduction和few-shot实验结果部分。</div>
+            </div>
+          </div>
+          <div class="paper-item">
+            <div class="paper-year">2022</div>
+            <div class="paper-content">
+              <div class="paper-title">Training language models to follow instructions with human feedback</div>
+              <div class="paper-authors">Ouyang et al. · OpenAI</div>
+              <div class="paper-note">InstructGPT论文，RLHF的原始出处。Figure 2的三步流程图是理解RLHF最清晰的可视化。</div>
+            </div>
+          </div>
+          <div class="paper-item">
+            <div class="paper-year">2022</div>
+            <div class="paper-content">
+              <div class="paper-title">Constitutional AI: Harmlessness from AI Feedback</div>
+              <div class="paper-authors">Bai et al. · Anthropic</div>
+              <div class="paper-note">宪法AI原始论文。理解Anthropic的对齐路线和RLHF路线的根本差异。</div>
+            </div>
+          </div>
+          <div class="paper-item">
+            <div class="paper-year">2022</div>
+            <div class="paper-content">
+              <div class="paper-title">High-Resolution Image Synthesis with Latent Diffusion Models</div>
+              <div class="paper-authors">Rombach et al. · LMU Munich</div>
+              <div class="paper-note">Stable Diffusion背后的潜在扩散模型论文。Figure 3的架构图直观展示了为什么LDM比像素空间扩散模型快得多。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end panels-3 -->
+    <div class="stepper-nav">
+      <button class="btn" id="prev-3" onclick="stepNav(3,-1)">← 上一步</button>
+      <span class="stepper-counter" id="counter-3">1 / 6</span>
+      <button class="btn primary" id="next-3" onclick="stepNav(3,1)">下一步 →</button>
+    </div>
+  </div><!-- end stepper-3 -->
+
+  <div class="stage-footer">
+    <button class="btn" onclick="showStage(2)">← 第二阶段</button>
+    <button class="btn primary" onclick="showStage(4)">第四阶段：分化与深化 →</button>
+  </div>
+</div>
+</section>
+
+<section class="stage-section" id="stage-4">
+<div class="stage-inner">
+  <div class="stage-header">
+    <div class="stage-number">04</div>
+    <div class="stage-header-text">
+      <h2>分化与深化：各家大模型路线之争</h2>
+      <div class="stage-era">2023–2024 · 建议用时：约25分钟</div>
+      <div class="stage-desc">同一个底座，为什么走出了不同的路？MoE架构、各家技术路线对比、长上下文优化，以及DeepSeek用效率挑战规模神话。</div>
+    </div>
+  </div>
+
+  <div class="stepper" id="stepper-4">
+    <div class="step-pills" id="pills-4"></div>
+    <div id="panels-4">
+
+      <!-- 4-1 开场 -->
+      <div class="step-panel" data-step="0">
+        <div class="step-era">2023 · 开场</div>
+        <div class="step-title">百模大战：同一个底座，为什么走出了不同的路？</div>
+        <div class="info-block"><p>ChatGPT爆发之后，2023年成为大模型密集发布之年。表面上看，所有模型都是"Transformer + 对齐"，但各家在三个维度上做出了截然不同的选择：架构怎么设计、对齐策略用什么、以及最核心的——用多少资源换多少能力。</p></div>
+        <div class="info-block"><p>这一阶段的核心问题不是"谁最强"，而是"为什么他们的选择不同"。理解这些差异，比记住谁的分数更高更有价值。</p></div>
+        <div class="warning-block"><p>一个值得记住的规律：每家公司的技术选择，背后几乎都有一个对应的商业逻辑。技术路线很少是纯粹的技术决定，背后总有一套利益驱动。</p></div>
+      </div>
+
+      <!-- 4-2 MoE -->
+      <div class="step-panel" data-step="1">
+        <div class="step-era">架构创新</div>
+        <div class="step-title">MoE：解决"更大更贵"矛盾的关键架构</div>
+        <div class="info-block"><p>规模定律告诉我们模型越大越好，但更大也意味着推理时计算量线性增加——每次生成一个token都要激活全部参数。<span class="term">MoE<span class="tooltip"><span class="tooltip-name">MoE · Mixture of Experts</span>专家混合架构。把模型参数分成许多"专家"子网络，每次只激活其中少数几个，总参数量大但推理成本低。</span></span>（Mixture of Experts，专家混合）是解决这个矛盾的关键架构。</p></div>
+        <div class="success-block"><p>MoE的核心思想：不把所有参数打包成一个整体，而是分成许多个"专家"子网络。每次处理一个token时，一个"路由器"决定激活其中的2–4个专家，其他专家休眠。总参数量很大，但每次实际计算只用一小部分。</p></div>
+        <div class="two-col">
+          <div class="col-card">
+            <div class="col-label">密集模型（Dense）</div>
+            <p>每次推理激活全部参数。计算量 = 总参数量。GPT-3（1750亿参数）推理成本极高。</p>
+          </div>
+          <div class="col-card">
+            <div class="col-label">MoE模型</div>
+            <p>总参数量大，每次只激活少数专家。推理速度和密集小模型相当，但效果接近大模型。GPT-4、Gemini、DeepSeek V3均采用。</p>
+          </div>
+        </div>
+        <div class="info-block"><p>实际效果：一个拥有万亿总参数的MoE模型，每次推理可能只激活约200亿参数——推理速度和密集200亿模型相当，但因为"见过"更多专家的知识，效果接近大得多的密集模型。</p></div>
+        <svg width="100%" viewBox="0 0 680 130" style="margin:12px 0;display:block" role="img" aria-label="MoE稀疏激活示意图">
+          <text x="148" y="16" text-anchor="middle" font-size="11" font-family="'Noto Sans SC',sans-serif" fill="#9a9690" font-weight="500">密集模型 — 每次激活全部参数</text>
+          <text x="490" y="16" text-anchor="middle" font-size="11" font-family="'Noto Sans SC',sans-serif" fill="#9a9690" font-weight="500">MoE模型 — 每次只激活部分专家</text>
+          <line x1="320" y1="6" x2="320" y2="124" stroke="#e8e5e0" stroke-width="1" stroke-dasharray="4 3"/>
+          <rect x="40" y="26" width="214" height="72" rx="8" fill="#fee8e8" stroke="#d0a0a0" stroke-width="1"/>
+          <text x="90" y="66" font-size="11" font-family="'Noto Sans SC',sans-serif" fill="#8a3030">全部参数激活</text>
+          <text x="90" y="82" font-size="11" font-family="'Noto Sans SC',sans-serif" fill="#8a3030">推理成本 = 总参数量</text>
+          <rect x="348" y="26" width="40" height="32" rx="6" fill="#e6f4ee" stroke="#1a6e52" stroke-width="1.5"/>
+          <text x="368" y="47" text-anchor="middle" font-size="10" font-family="'Noto Sans SC',sans-serif" fill="#0d4a36">专家1</text>
+          <rect x="396" y="26" width="40" height="32" rx="6" fill="#e6f4ee" stroke="#1a6e52" stroke-width="1.5"/>
+          <text x="416" y="47" text-anchor="middle" font-size="10" font-family="'Noto Sans SC',sans-serif" fill="#0d4a36">专家2</text>
+          <rect x="444" y="26" width="40" height="32" rx="6" fill="#f3f1ee" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="464" y="47" text-anchor="middle" font-size="10" font-family="'Noto Sans SC',sans-serif" fill="#9a9690">专家3</text>
+          <rect x="492" y="26" width="40" height="32" rx="6" fill="#f3f1ee" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="512" y="47" text-anchor="middle" font-size="10" font-family="'Noto Sans SC',sans-serif" fill="#9a9690">专家4</text>
+          <rect x="540" y="26" width="40" height="32" rx="6" fill="#f3f1ee" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="560" y="47" text-anchor="middle" font-size="10" font-family="'Noto Sans SC',sans-serif" fill="#9a9690">专家5</text>
+          <rect x="588" y="26" width="40" height="32" rx="6" fill="#f3f1ee" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="608" y="47" text-anchor="middle" font-size="10" font-family="'Noto Sans SC',sans-serif" fill="#9a9690">专家6</text>
+          <rect x="348" y="66" width="40" height="32" rx="6" fill="#f3f1ee" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="368" y="87" text-anchor="middle" font-size="10" font-family="'Noto Sans SC',sans-serif" fill="#9a9690">专家7</text>
+          <rect x="396" y="66" width="40" height="32" rx="6" fill="#f3f1ee" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="416" y="87" text-anchor="middle" font-size="10" font-family="'Noto Sans SC',sans-serif" fill="#9a9690">专家8</text>
+          <rect x="444" y="66" width="40" height="32" rx="6" fill="#f3f1ee" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="464" y="87" text-anchor="middle" font-size="10" font-family="'Noto Sans SC',sans-serif" fill="#9a9690">专家9</text>
+          <rect x="492" y="66" width="40" height="32" rx="6" fill="#e6f4ee" stroke="#1a6e52" stroke-width="1.5"/>
+          <text x="512" y="87" text-anchor="middle" font-size="10" font-family="'Noto Sans SC',sans-serif" fill="#0d4a36">专家10</text>
+          <rect x="540" y="66" width="40" height="32" rx="6" fill="#f3f1ee" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="560" y="87" text-anchor="middle" font-size="10" font-family="'Noto Sans SC',sans-serif" fill="#9a9690">专家11</text>
+          <rect x="588" y="66" width="40" height="32" rx="6" fill="#f3f1ee" stroke="#d0cdc8" stroke-width="1"/>
+          <text x="608" y="87" text-anchor="middle" font-size="10" font-family="'Noto Sans SC',sans-serif" fill="#9a9690">专家12</text>
+          <text x="480" y="118" text-anchor="middle" font-size="11" font-family="'Noto Sans SC',sans-serif" fill="#0d4a36">绿色 = 本次激活的专家（3/12），其余休眠</text>
+        </svg>
+        <div><span class="tag">稀疏激活</span><span class="tag">路由器 Router</span><span class="tag">GPT-4 · Gemini · DeepSeek V3</span></div>
+      </div>
+
+      <!-- 4-3 五家路线 -->
+      <div class="step-panel" data-step="2">
+        <div class="step-era">各家对比</div>
+        <div class="step-title">五条路线：OpenAI / Anthropic / Meta / DeepSeek / Google</div>
+        <div class="info-block"><p>五家公司基于相似的基础技术，做出了截然不同的选择——每个选择背后都有清晰的商业逻辑。</p></div>
+        <div class="two-col">
+          <div class="col-card" style="border-left:3px solid var(--purple)">
+            <div class="col-label">OpenAI · 能力优先</div>
+            <p>GPT-4（疑似MoE，约1.8万亿总参数）。首个可靠多模态模型（GPT-4V）。对齐用RLHF+人工红队。能力是第一位，安全是第二位。完全闭源。靠能力溢价卖API。</p>
+          </div>
+          <div class="col-card" style="border-left:3px solid var(--teal)">
+            <div class="col-label">Anthropic · 安全优先</div>
+            <p>Claude系列。对齐用宪法AI（CAI）+RLHF，比OpenAI更保守。率先把上下文窗口做到100K token。创始团队来自OpenAI，核心分歧是"安全应该排第几位"。</p>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="col-card" style="border-left:3px solid var(--coral)">
+            <div class="col-label">Meta · 开源生态</div>
+            <p>Llama系列，完全开源权重。战略目的是削弱闭源模型护城河。Meta不靠AI赚钱（靠广告），开源成本最低。催生了整个开源微调社区，Llama 3在70B级别接近GPT-4能力。</p>
+          </div>
+          <div class="col-card" style="border-left:3px solid var(--amber)">
+            <div class="col-label">DeepSeek · 效率优先</div>
+            <p>来自量化对冲基金幻方科技。受出口管制无法买最新H100，被迫深度优化算法。DeepSeek V3训练成本约600万美元，同级别GPT-4超过1亿美元。证明算法效率可部分替代算力。</p>
+          </div>
+        </div>
+        <div class="col-card" style="border-left:3px solid var(--teal);margin-top:10px">
+          <div class="col-label">Google · 多模态原生</div>
+          <p>Gemini系列。从架构设计之初就把文字、图像、音频、视频当成平等输入类型。Gemini 1.5 Pro上下文窗口达100万token，用MoE架构实现。有TPU、Search数据、YouTube视频数据等独特资产，但内部存在广告业务与AI的利益冲突。</p>
+        </div>
+
+        <!-- 展开：GPU与量化 -->
+        <div class="expand-node">
+          <button class="expand-trigger" onclick="toggleExpand(this)">
+            <div class="expand-icon">+</div>
+            <span class="expand-label">展开深入：GPU是什么？为什么"有合适GPU就能本地跑模型"？</span>
+            <span class="expand-hint">GPU vs CPU · 显存瓶颈 · 量化技术</span>
+          </button>
+          <div class="expand-content">
+            <div class="two-col">
+              <div class="col-card">
+                <div class="col-label">CPU（中央处理器）</div>
+                <p>少量超强核心（4–32个）。擅长复杂逻辑、顺序任务。像几个天才工程师，每人能解极复杂的问题，但同时只能做一件事。</p>
+              </div>
+              <div class="col-card">
+                <div class="col-label">GPU（图形处理器）</div>
+                <p>大量简单核心（数千至数万个）。擅长简单运算的大规模并行。像数千个流水线工人，同时推进数千个任务。</p>
+              </div>
+            </div>
+            <div class="info-block"><p>GPU最初为游戏渲染设计——渲染一帧画面需要对屏幕每个像素同时做颜色计算，天然需要大规模并行。研究者发现神经网络的核心运算（矩阵乘法）和像素渲染在数学上是同一类问题，GPU因此意外成了AI计算的最佳硬件。</p></div>
+            <div class="warning-block"><p>跑模型的真正瓶颈是<strong>显存（VRAM）</strong>，不是算力。模型的所有参数必须完整装进显存才能开始计算。7B参数模型经过4-bit量化后约需4–6GB显存，可用普通游戏显卡跑；70B模型约需35–40GB，需要专业卡或多卡。</p></div>
+            <div class="success-block"><p><strong>量化（Quantization）</strong>：把每个参数从32位浮点数压缩到4位整数，精度略降但显存需求减少约8倍，实测模型效果损失通常小于5%。这使得"本地跑大模型"真正可行。Llama的开源+量化，对大模型的意义类似Linux对操作系统——把原来只有大机构才能用的东西，变成了任何人都能自己部署的基础设施。</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4-4 DeepSeek深挖 -->
+      <div class="step-panel" data-step="3">
+        <div class="step-era">DeepSeek · 效率路线深挖</div>
+        <div class="step-title">DeepSeek：约束是创新之母</div>
+        <div class="info-block"><p>DeepSeek的故事值得单独深挖，因为它不只是"一个新模型"，而是一个证明：顶级AI能力的门槛，正在因为算法效率的进步而持续降低。</p></div>
+        <div class="success-block"><p>DeepSeek V3（2024年底）：2360亿总参数，每次激活约210亿。训练成本约600万美元，同级别竞品超过1亿美元。在多项基准测试上达到GPT-4级别，并半开源发布技术报告。这个数字让整个行业重新审视"规模就是一切"的逻辑。</p></div>
+
+        <!-- 展开：DeepSeek路由改进 -->
+        <div class="expand-node">
+          <button class="expand-trigger" onclick="toggleExpand(this)">
+            <div class="expand-icon">+</div>
+            <span class="expand-label">展开深入：DeepSeek的MoE路由改进了什么？</span>
+            <span class="expand-hint">细粒度专家 · 负载均衡 · MLA注意力压缩</span>
+          </button>
+          <div class="expand-content">
+            <div class="danger-block"><p><strong>普通MoE的"明星专家"问题</strong>：路由器一旦发现某几个专家"好用"，就反复选它们，导致这些专家越来越强，其他200多个专家几乎成摆设。总参数量2360亿，真正发挥作用的可能只有几百亿。</p></div>
+            <div class="info-block" style="border-left:3px solid var(--teal);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+              <p><strong>改进一：细粒度专家分解</strong><br>把同样总参数量拆成更多更小的专家（比如64个小专家），每次选更多个（比如选6个）。组合可能性从"8选2=28种"变成"64选6=数十亿种"。每个小专家专注更窄的功能，分工更精细，组合更灵活。</p>
+            </div>
+            <div class="info-block" style="border-left:3px solid var(--purple);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+              <p><strong>改进二：辅助负载均衡损失</strong><br>在训练目标里加一个惩罚项：如果某些专家被选的频率远高于平均值，就增加损失。路由器被强制学会均衡分配工作，2360亿参数里真正有效工作的比例大幅提高。</p>
+            </div>
+            <div class="info-block" style="border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+              <p><strong>改进三：MLA（多头潜在注意力）</strong><br>不直接存储完整的Key和Value向量，而是存储一个压缩后的低维"潜在向量"，用时再解压。KV缓存压缩比约5–13倍，同等显存能处理更长的上下文或服务更多并发用户。</p>
+            </div>
+            <div class="success-block"><p>三个改进叠加：细粒度专家让每次激活的参数组合更精准；负载均衡让所有参数都被充分训练；MLA大幅降低推理显存占用。训练成本600万美元的背后，是把每一块钱的计算预算都用得更充分。</p></div>
+          </div>
+        </div>
+
+        <div class="accent-block"><p>DeepSeek的本质：当你没有最好的材料，你必须成为更好的厨师。出口管制本来是限制，反而逼出了在资源充裕时不会被发现的算法改进。</p></div>
+        <div><span class="tag">DeepSeek V2/V3</span><span class="tag">MLA</span><span class="tag">细粒度MoE</span><span class="tag">算法效率</span></div>
+      </div>
+
+      <!-- 4-5 长上下文 -->
+      <div class="step-panel" data-step="4">
+        <div class="step-era">长上下文 · RAG</div>
+        <div class="step-title">长上下文与RAG：让模型能处理更长的输入</div>
+        <div class="info-block"><p>2023–2024年有两个不那么"革命性"但极其重要的进展，直接决定了大模型能用在哪些实际场景里。</p></div>
+        <div class="info-block" style="border-left:3px solid var(--teal);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+          <p><strong>长上下文窗口</strong><br>早期GPT-3只有4K token上下文（约3000字）。Claude 2扩展到100K，Gemini 1.5扩展到100万token（可以放下整套《哈利·波特》）。技术难点：Self-Attention的计算量随上下文长度平方增长——上下文翻倍，计算量翻四倍。</p>
+        </div>
+
+        <!-- 展开：长上下文四种优化 -->
+        <div class="expand-node">
+          <button class="expand-trigger" onclick="toggleExpand(this)">
+            <div class="expand-icon">+</div>
+            <span class="expand-label">展开深入：FlashAttention · GQA · RoPE · 线性注意力——四种优化各解决什么？</span>
+            <span class="expand-hint">显存带宽 · KV缓存 · 位置泛化 · 计算复杂度</span>
+          </button>
+          <div class="expand-content">
+            <div class="info-block"><p>长上下文不是一个问题，而是四个同时存在的瓶颈。四种技术各自对准一个瓶颈，互不重叠，可以叠加使用。</p></div>
+            <div class="info-block" style="border-left:3px solid var(--teal);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+              <p><strong>FlashAttention</strong>——解决：显存带宽瓶颈<br>标准Attention的性能瓶颈不是"算法慢"，而是数据在GPU高速缓存（SRAM）和显存（HBM）之间来回搬运太多次。FlashAttention把Q/K/V矩阵切成小块，每次装进SRAM后在内部完成全部计算，再写回显存——搬运次数从5–6次降到2次。速度提升2–4倍，不改变算法本身，几乎所有现代模型都用。</p>
+            </div>
+            <div class="info-block" style="border-left:3px solid var(--purple);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+              <p><strong>GQA（分组查询注意力）</strong>——解决：KV缓存太大<br>标准多头注意力的32个头各有独立的K和V，推理时需要缓存32份。GQA把32个Query头分成若干组，同组共享一套K和V。KV缓存减少75%，模型质量只有轻微损失。Llama 3、Mistral等均采用。</p>
+            </div>
+            <div class="info-block" style="border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+              <p><strong>RoPE（旋转位置编码）</strong>——解决：超出训练长度后位置感失效<br>旧版位置编码训练时只见过512个位置，推理时遇到第513个位置模型就迷失了。RoPE用旋转角度来编码位置——两个词的相对位置等于旋转角度的差值，这个关系可以无限延伸，模型在训练范围之外仍然能感知位置关系。几乎所有现代模型的标配。</p>
+            </div>
+            <div class="info-block" style="border-left:3px solid var(--coral);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+              <p><strong>线性注意力</strong>——解决：计算复杂度O(N²)→O(N)<br>标准Attention每个词要和所有其他词计算相似度，复杂度随上下文长度平方增长。线性注意力通过数学变换改变运算顺序，把复杂度降到线性增长。Gemini 1.5用混合方案：大部分层用线性注意力处理长程依赖，关键层仍用标准Attention保证精度。精度有轻微损失，但使100万token成为可能。</p>
+            </div>
+            <div class="success-block"><p>四者关系：互不干扰，可以叠加。Gemini 1.5四种都用；Llama 3没有线性注意力，用另外三种。从4K到100万token，不是靠某一个技术突破，而是多个优化同时到位。</p></div>
+          </div>
+        </div>
+
+        <div class="info-block" style="border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px;margin-top:10px">
+          <p><strong>RAG（检索增强生成）</strong><br>大模型的知识截止在训练时间点，无法知道最新信息，也无法访问私有数据库。RAG的思路：回答问题之前，先去外部知识库检索相关内容，把检索到的内容塞进上下文，再让模型基于这些内容回答——模型从"凭记忆答题"变成"开卷考试"。目前企业部署大模型最常用的架构模式。</p>
+        </div>
+        <div class="accent-block"><p>翻译员的工作方式变了：旧方式是把原文读完、凭记忆翻译；新方式（RAG）是翻译每个词时都可以回头翻看原文的对应位置——带着原文翻译，而不是凭印象。</p></div>
+      </div>
+
+      <!-- 4-6 推理能力 + GEO -->
+      <div class="step-panel" data-step="5">
+        <div class="step-era">2024 · 能力边界</div>
+        <div class="step-title">"更聪明"的下一个台阶：推理能力与内容生态</div>
+        <div class="info-block"><p>到2024年，顶级模型在写作、翻译、代码、知识问答上已经达到或超越普通人类水平。但在需要多步推理的数学、编程、逻辑问题上，仍然经常犯低级错误。</p></div>
+        <div class="danger-block"><p>核心问题：标准语言模型是"快思考"模式——接到问题，直接输出答案。人类解复杂问题时会"慢思考"——打草稿、分步骤、验证、回溯。语言模型缺乏这个机制。</p></div>
+        <div class="success-block"><p>Chain of Thought（思维链）：研究发现，仅仅是在prompt里加上"让我们一步步思考"，模型在数学推理上的准确率就能大幅提升——因为生成中间步骤的过程本身就在帮助模型"理清思路"。这个发现直接导向了第五阶段的核心：o1模型把"思考"从prompt技巧变成了模型训练本身的目标。</p></div>
+
+        <!-- 展开：GEO -->
+        <div class="expand-node">
+          <button class="expand-trigger" onclick="toggleExpand(this)">
+            <div class="expand-icon">+</div>
+            <span class="expand-label">展开深入：Google的广告矛盾与SEO→GEO的范式迁移</span>
+            <span class="expand-hint">搜索广告利益冲突 · 流量被AI拦截 · 生成引擎优化</span>
+          </button>
+          <div class="expand-content">
+            <div class="danger-block"><p><strong>Google的内部矛盾</strong>：Google 2023年广告收入约2240亿美元，搜索广告占大头。商业逻辑是：用户有问题→去Google搜索→看到广告→点击→Google赚钱。AI对话助手打破了第一步——AI直接回答，用户不再点链接，广告没有曝光机会。工程师想做最好的AI答案，商业团队担心广告收入崩塌，这个内部矛盾拖慢了Google全力押注AI的速度。</p></div>
+            <div class="info-block"><p><strong>SEO（搜索引擎优化）→ GEO（生成引擎优化）</strong>：SEO是过去20年互联网内容行业的基础逻辑——让自己的网页在Google搜索结果里排名更高，获得点击流量。这套逻辑建立在"用户会点链接"的前提上。AI搜索打破了这个前提：当用户直接从AI得到答案，他们不点链接，流量不再流向内容创作者，SEO的商业价值大幅缩水。</p></div>
+            <div class="success-block"><p>GEO的核心不再是"让搜索引擎的爬虫给我排名高"，而是"让AI在生成答案时引用我、推荐我"。目标从"搜索排名第一"变成"成为AI的知识来源"。关注内容权威性与可引用性、结构化数据标注、成为某领域的"第一手来源"。</p></div>
+            <div class="warning-block"><p><strong>内容生态悖论</strong>：AI用人类内容训练自己→AI直接回答问题→减少用户访问原始内容→内容创作者收入下降→高质量内容产生减少→AI的训练数据质量下降。这个循环目前没有明确的解决方案，是整个内容产业和AI行业共同面临的结构性问题。</p></div>
+          </div>
+        </div>
+        <div><span class="tag">Chain of Thought</span><span class="tag">思维链</span><span class="tag">GEO</span><span class="tag">RAG</span></div>
+      </div>
+
+      <!-- 4-7 阶段总结 -->
+      <div class="step-panel" data-step="6">
+        <div class="step-era">阶段总结</div>
+        <div class="step-title">第四阶段的核心收获</div>
+        <div class="success-block"><p>这一阶段最重要的认知：大模型不是一个技术，而是一个技术族群。MoE解决的是"如何用更少算力跑更大模型"，长上下文解决的是"如何处理更长的输入"，RAG解决的是"如何引入外部知识"，对齐方法的分化解决的是"如何让模型更安全/有用"。每条路线针对的是不同的真实瓶颈。</p></div>
+        <div class="info-block"><p>DeepSeek的出现是这个阶段最重要的信号：它不只是一个新模型，而是一个证明——顶级AI能力的门槛，正在因为算法效率的进步而持续降低。这对整个行业格局意味着什么，现在还没有定论。</p></div>
+        <div class="warning-block"><p>带入第五阶段的三个问题：① o1/DeepSeek-R1的"深度思考"到底是怎么训练出来的？它和普通语言模型有什么本质不同？ ② Agent是什么，为什么现在突然成了最热的方向？ ③ 这个领域目前真正还没解决的核心难题是什么？</p></div>
+
+        <div class="reading-list">
+          <h3>延伸阅读</h3>
+          <div class="paper-item">
+            <div class="paper-year">2022</div>
+            <div class="paper-content">
+              <div class="paper-title">FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness</div>
+              <div class="paper-authors">Dao et al. · Stanford</div>
+              <div class="paper-note">FlashAttention原始论文。Introduction部分对IO瓶颈的解释非常清晰，不需要读数学推导部分。</div>
+            </div>
+          </div>
+          <div class="paper-item">
+            <div class="paper-year">2023</div>
+            <div class="paper-content">
+              <div class="paper-title">DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model</div>
+              <div class="paper-authors">DeepSeek AI</div>
+              <div class="paper-note">DeepSeek V2技术报告。MLA和细粒度MoE的原始出处，图表丰富，比论文更易读。</div>
+            </div>
+          </div>
+          <div class="paper-item">
+            <div class="paper-year">2022</div>
+            <div class="paper-content">
+              <div class="paper-title">Chain-of-Thought Prompting Elicits Reasoning in Large Language Models</div>
+              <div class="paper-authors">Wei et al. · Google Brain</div>
+              <div class="paper-note">思维链原始论文。Figure 1的对比例子一眼就能理解核心发现，是目前引用量最高的提示工程论文。</div>
+            </div>
+          </div>
+          <div class="paper-item">
+            <div class="paper-year">2023</div>
+            <div class="paper-content">
+              <div class="paper-title">Direct Preference Optimization: Your Language Model is Secretly a Reward Model</div>
+              <div class="paper-authors">Rafailov et al. · Stanford</div>
+              <div class="paper-note">DPO原始论文。理解为什么可以跳过单独训练奖励模型这一步，Section 2的推导直观易懂。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end panels-4 -->
+    <div class="stepper-nav">
+      <button class="btn" id="prev-4" onclick="stepNav(4,-1)">← 上一步</button>
+      <span class="stepper-counter" id="counter-4">1 / 7</span>
+      <button class="btn primary" id="next-4" onclick="stepNav(4,1)">下一步 →</button>
+    </div>
+  </div><!-- end stepper-4 -->
+
+  <div class="stage-footer">
+    <button class="btn" onclick="showStage(3)">← 第三阶段</button>
+    <button class="btn primary" onclick="showStage(5)">第五阶段：现在与未来 →</button>
+  </div>
+</div>
+</section>
+
+<section class="stage-section" id="stage-5">
+<div class="stage-inner">
+  <div class="stage-header">
+    <div class="stage-number">05</div>
+    <div class="stage-header-text">
+      <h2>现在与未来：推理、Agent与未解难题</h2>
+      <div class="stage-era">2025– · 建议用时：约25分钟</div>
+      <div class="stage-desc">o1/DeepSeek-R1的深度思考、Agent框架与Skill生态、OpenClaw本地Agent，以及五个核心未解难题。含2025年最新进展：推理模型已在数学竞赛达到金牌级别，Qwen系列超越Llama成为开源社区新主流。</div>
+    </div>
+  </div>
+
+  <div class="stepper" id="stepper-5">
+    <div class="step-pills" id="pills-5"></div>
+    <div id="panels-5">
+
+      <!-- 5-1 推理模型 -->
+      <div class="step-panel" data-step="0">
+        <div class="step-era">2024–2025 · 推理模型</div>
+        <div class="step-title">o1和DeepSeek-R1：把"思考"训练进模型</div>
+        <div class="info-block"><p>第四阶段结尾提到了Chain of Thought——在prompt里加"一步步思考"能提升推理效果。o1（OpenAI，2024年9月）把这件事从"prompt技巧"升级为"训练目标"：让模型在给出最终答案之前，先生成一段完整的内部推理过程，这段推理本身也被纳入训练和优化。</p></div>
+        <div class="success-block"><p>核心机制：用强化学习训练模型的"思考行为"。在数学、编程等有明确对错答案的领域，让模型生成推理过程，根据最终答案是否正确给奖励——正确就强化这种推理模式，错误就削弱。模型慢慢学会了"什么样的思考步骤更可能导向正确答案"。到2025年，推理模型已在主要数学竞赛（AIME）上达到金牌级别表现。</p></div>
+        <div class="two-col">
+          <div class="col-card">
+            <div class="col-label">普通语言模型（快思考）</div>
+            <p>接到问题 → 直接输出答案。快但在复杂推理时频繁失误。</p>
+          </div>
+          <div class="col-card">
+            <div class="col-label">推理模型（慢思考）</div>
+            <p>接到问题 → 先内部推演多个步骤 → 验证 → 回溯 → 输出答案。慢但准确率大幅提升。</p>
+          </div>
+        </div>
+
+        <!-- 展开：R1训练机制 -->
+        <div class="expand-node">
+          <button class="expand-trigger" onclick="toggleExpand(this)">
+            <div class="expand-icon">+</div>
+            <span class="expand-label">展开深入：DeepSeek-R1的训练是蒸馏吗？和o1有什么区别？</span>
+            <span class="expand-hint">SFT跳过 · 直接RL · 蒸馏的正确含义</span>
+          </button>
+          <div class="expand-content">
+            <div class="info-block"><p>R1的训练分两个阶段，容易混淆：</p></div>
+            <div class="info-block" style="border-left:3px solid var(--teal);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+              <p><strong>第一阶段（核心突破）：直接RL，跳过SFT</strong><br>普通推理模型的训练流程是：先收集人工写的"好的思维链"示例做监督微调（SFT），再做强化学习（RL）。DeepSeek发现：跳过SFT这步，直接从基础模型（DeepSeek-V3）出发做RL，模型反而能自己"摸索"出更自然的推理风格，不会被人工示例的固定格式限制住。这个发现简化了推理模型的训练流程，影响了后续整个领域的方法论。</p>
+            </div>
+            <div class="info-block" style="border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+              <p><strong>第二阶段（蒸馏）：用R1训练更小的模型</strong><br>先用强化学习训练出强大的R1，再把它的思维链数据用来训练更小的模型（7B/14B/70B）——这个小模型训练过程才是蒸馏。蒸馏是"用老师的输出来训练学生"，不是R1本身的训练方式。</p>
+            </div>
+            <div class="success-block"><p>R1真正影响行业的不是蒸馏，而是"跳过SFT直接RL"这个发现——它证明推理能力可以完全从强化学习中涌现，不需要人工标注的思维链示例作为起点。</p></div>
+          </div>
+        </div>
+
+        <div class="info-block"><p>研究者分析推理模型的思维链时，发现它会自发出现几种行为，没有被明确训练，而是从强化学习中自然涌现：<strong>回溯</strong>（走了一段推理发现不对，主动说"等等，这个方向有问题"）、<strong>子问题分解</strong>（自发把复杂问题拆成几个小问题）、<strong>自我验证</strong>（给出中间结论后会自己质疑它）。这和第三阶段GPT-3的"涌现"是同一类现象，在更高层次上再次发生。</p></div>
+        <div><span class="tag">o1 · o3</span><span class="tag">DeepSeek-R1</span><span class="tag">强化学习推理</span><span class="tag">慢思考</span></div>
+      </div>
+
+      <!-- 5-2 Agent框架 -->
+      <div class="step-panel" data-step="1">
+        <div class="step-era">Agent框架</div>
+        <div class="step-title">Agent：从"回答问题"到"完成任务"</div>
+        <div class="info-block"><p>语言模型默认是无状态的：你问一个问题，它回答，对话结束。Agent是一种让模型持续运行、自主决策、调用工具、完成多步骤任务的框架。关键差异：普通模型是被动响应，Agent是主动执行。</p></div>
+        <div class="success-block"><p>Agent能调用的"工具"可以是任何东西：搜索引擎、代码执行器、数据库、文件系统、API接口、浏览器、甚至另一个AI模型。这让语言模型从"只能说"变成了"能做"——能查最新信息、能运行代码验证结果、能操作电脑界面。</p></div>
+        <div class="accent-block"><p>语言模型是一个只能坐在椅子上动嘴的顾问；Agent是一个能站起来、打电话、查资料、发文件、订机票的助理。能力边界完全不同。</p></div>
+        <div class="three-col">
+          <div class="col-card">
+            <div class="col-label">工具调用（Tool Use）</div>
+            <p>最基础层：给模型定义一组可调用的工具（函数），模型决定何时调用、传什么参数、怎么用返回结果。所有主流模型原生支持。</p>
+          </div>
+          <div class="col-card">
+            <div class="col-label">MCP（模型上下文协议）</div>
+            <p>Anthropic 2024年提出的开放标准。定义统一的"工具接口规范"，让任何服务都能用同一种方式被任何AI调用——类似USB接口的作用。</p>
+          </div>
+          <div class="col-card">
+            <div class="col-label">Multi-Agent</div>
+            <p>多个AI模型协作：一个"主管Agent"拆解任务，分配给多个"专员Agent"并行执行，再汇总结果。能处理单个模型上下文装不下的超大任务。</p>
+          </div>
+        </div>
+        <div class="warning-block"><p>Agent目前最大的痛点：可靠性。人类做任务时出错可以发现并纠正，Agent在多步骤任务中一步出错可能导致后续全部崩塌。"让Agent稳定可靠地完成10步任务"比"完成1步"难得不成比例。</p></div>
+      </div>
+
+      <!-- 5-3 Skill + 编程Agent -->
+      <div class="step-panel" data-step="2">
+        <div class="step-era">Skill生态 · 编程Agent</div>
+        <div class="step-title">Skill生态与垂直化Agent：执行层的落地</div>
+        <div class="info-block"><p>工具调用解决的是"调用外部服务"的问题，而Skill解决的是另一个问题：怎么让模型在特定场景下稳定地、可复用地执行一套复杂操作——不只是调用一次API，而是掌握一套完整的做事方法。</p></div>
+        <div class="info-block"><p><strong>Skill的本质</strong>：一段预写的指令集或流程，定义了"在特定情况下应该怎么做"，可以被Agent按需调用。类似编程里的函数库——不是每次都从头写代码，而是调用已经写好并测试过的函数。官方和社区提供大量现成Skill（邮件处理、定时任务、文件管理等），用户按需安装。</p></div>
+        <div class="accent-block"><p>Skill是解决Agent可靠性问题的一条路径：与其让Agent每次都从零开始规划如何完成任务（容易出错），不如让它调用已经经过验证的Skill模块。就像老员工调用公司SOP，而不是新员工每次重新摸索流程。</p></div>
+
+        <div class="info-block"><p><strong>编程Agent：垂直化的执行层</strong><br>Claude Code、OpenAI Codex等编程Agent能真正运行代码、读取文件系统、执行终端命令、看到输出结果再迭代——这和我们讲的"执行层"完全重叠。它们是垂直专业化的Agent，深度优化了编程这一个领域的执行能力。</p></div>
+        <div class="success-block"><p>编程之所以最先被攻克：代码的执行结果是明确可验证的（运行通过/报错），这给了Agent明确的反馈信号。其他领域的"执行结果是否正确"往往更模糊——这是Agent扩展到其他领域的主要难点。</p></div>
+
+        <!-- 展开：OpenClaw -->
+        <div class="expand-node">
+          <button class="expand-trigger" onclick="toggleExpand(this)">
+            <div class="expand-icon">+</div>
+            <span class="expand-label">展开深入：OpenClaw——本地优先的Agent框架</span>
+            <span class="expand-hint">本地部署 · 持久记忆 · Skill扩展 · 安全风险</span>
+          </button>
+          <div class="expand-content">
+            <div class="info-block"><p>OpenClaw（"龙虾"）是奥地利程序员Peter Steinberger于2025年发布的开源本地Agent框架。它本身不是AI模型，而是把任何LLM（GPT、Claude、本地Llama……）变成能在用户本地电脑上执行实际操作的"数字员工"。</p></div>
+            <div class="info-block" style="border-left:3px solid var(--teal);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+              <p><strong>工作方式</strong>：用户通过WhatsApp、Telegram等即时通讯工具发送自然语言指令 → Agent理解意图并分解任务 → 在本地环境调用工具（文件管理器、终端命令、浏览器）执行 → 主动反馈进度结果。所有数据在本地处理，不上云。</p>
+            </div>
+            <div class="info-block" style="border-left:3px solid var(--purple);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+              <p><strong>持久记忆的实现</strong>：跨会话记住用户偏好、历史指令和正在进行的任务。底层仍是"提取-存储-检索"三步——对话结束后提取关键信息压缩存储，下次对话检索相关内容注入上下文。额外优势：记忆范围更广，能记住"任务执行结果"（上次帮你整理文件的结果、上次写的代码在哪个路径），不只是对话内容。</p>
+            </div>
+            <div class="two-col">
+              <div class="col-card">
+                <div class="col-label">核心优势</div>
+                <p>数据完全不离开本地（医疗/法律/金融合规） / 模型无关，可接任何LLM / Skill生态可扩展 / 可完全离线运行</p>
+              </div>
+              <div class="col-card">
+                <div class="col-label">主要局限</div>
+                <p>部署门槛高，需自己维护硬件 / 记忆仍是工程方案非真正学习 / 高权限带来高安全风险</p>
+              </div>
+            </div>
+            <div class="danger-block"><p><strong>Prompt Injection安全风险</strong>：OpenClaw有真实的本地执行权限（读写文件、执行终端命令）。攻击者在某个文件或邮件里藏入恶意指令，当OpenClaw读取这个内容时，LLM可能把恶意指令当成合法用户命令来执行——真实后果（文件被删、数据外泄）不可撤销。CNCERT（国家互联网应急中心）已发布相关风险提示。这是整个本地Agent领域的共同挑战。</p></div>
+          </div>
+        </div>
+        <div><span class="tag">Tool Use</span><span class="tag">MCP</span><span class="tag">Skill</span><span class="tag">Claude Code</span><span class="tag">OpenClaw</span></div>
+      </div>
+
+      <!-- 5-4 长期记忆 -->
+      <div class="step-panel" data-step="3">
+        <div class="step-era">未解难题 · 一</div>
+        <div class="step-title">长期记忆与持续学习：模型为什么"用完就忘"？</div>
+        <div class="danger-block"><p>当前语言模型没有真正的长期记忆。每次对话结束，所有上下文消失。更根本的问题：模型的知识在训练完成后就冻结了——它无法从对话中学习新知识并永久保留。</p></div>
+        <div class="info-block"><p>当前的临时方案：外部记忆数据库（把对话历史存下来，下次对话时检索相关内容塞进上下文）；RAG（实时检索外部信息）。这些都是"给失忆症患者配备笔记本"，不是真正的记忆。</p></div>
+
+        <!-- 展开：跨窗口记忆实现 -->
+        <div class="expand-node">
+          <button class="expand-trigger" onclick="toggleExpand(this)">
+            <div class="expand-icon">+</div>
+            <span class="expand-label">展开深入：Claude/ChatGPT的跨会话记忆是怎么实现的？</span>
+            <span class="expand-hint">提取→存储→检索 · 向量数据库 · 局限性</span>
+          </button>
+          <div class="expand-content">
+            <div class="info-block"><p>工程实现分三步，本质是"被告知"而非"真正记得"：</p></div>
+            <div class="info-block" style="border-left:3px solid var(--teal);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+              <p><strong>第一步：提取与压缩</strong><br>对话结束时，后台运行总结模型，把对话里的关键信息提取压缩成结构化的"记忆条目"——不是存完整对话记录，而是存"用户是产品经理，喜欢简洁回答，正在做AI教育项目"这样的摘要。</p>
+            </div>
+            <div class="info-block" style="border-left:3px solid var(--purple);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+              <p><strong>第二步：存储与索引</strong><br>记忆条目存在向量数据库里。每条记忆被转换成向量，支持语义搜索——不是关键词匹配，而是"找和当前话题最相关的记忆"。</p>
+            </div>
+            <div class="info-block" style="border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+              <p><strong>第三步：检索与注入</strong><br>下次对话开始时，根据用户的第一句话检索最相关的记忆条目，把它们塞进新对话的系统提示里。模型看到这些内容，就好像"记得"之前的事——但其实是被告知的，不是真正记得。</p>
+            </div>
+            <div class="warning-block"><p>局限：提取阶段会丢失细节；检索阶段可能找错记忆；如果用户之前说的某件事后来改变了，旧记忆可能误导模型。更根本的是——这类系统能记住"关于你的事实"，但无法记住"和你互动的过程"，无法从互动中真正改进。</p></div>
+          </div>
+        </div>
+
+        <div class="danger-block"><p><strong>更深的问题——灾难性遗忘</strong>：当你试图让模型在已有知识上继续学习新内容时，它会大幅遗忘之前学过的东西。神经网络的参数调整是全局性的，无法像人类大脑一样把新知识"插入"已有框架而不干扰旧知识。这个问题在神经网络领域存在了几十年，目前没有根本性解决方案。</p></div>
+        <div class="accent-block"><p>就像一块黑板：要写新内容，只能先擦掉旧的。人类的记忆更像一本书：可以翻到新的一页写新内容，旧页面完整保留。让AI拥有"书式记忆"而非"黑板记忆"，是目前还没解决的基础性挑战。</p></div>
+      </div>
+
+      <!-- 5-5 其他未解难题 -->
+      <div class="step-panel" data-step="4">
+        <div class="step-era">未解难题 · 二至五</div>
+        <div class="step-title">幻觉、推理上限、可解释性，以及内容生态悖论</div>
+        <div class="info-block" style="border-left:3px solid var(--red);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+          <p><strong>幻觉（Hallucination）</strong>：模型以完全自信的语气给出错误的事实——错误的论文引用、不存在的法律条文、编造的历史事件。根本原因：训练目标是"预测下一个最可能的token"，不是"确保说的每句话都正确"。当模型不确定时，它不会说"我不知道"，而是生成"听起来最合理"的内容。RLHF加剧了这个问题：标注员倾向于给自信流畅的回答打高分，模型学到的是"自信比承认不确定更受欢迎"。目前没有完全消除幻觉的方案。</p>
+        </div>
+        <div class="info-block" style="border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+          <p><strong>推理上限</strong>：推理模型在"已知解题套路"里做深度搜索时表现出色，但当问题需要"发明新套路"时，表现接近普通模型。ARC-AGI测试（专门检测"真正推理能力"的基准，每道题都需要从几个例子里发现全新规律）上，最强推理模型的表现远低于普通成年人。模型的"思考"究竟是真正推理还是复杂的模式匹配？这个问题目前没有确定性答案。</p>
+        </div>
+        <div class="info-block" style="border-left:3px solid var(--purple);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+          <p><strong>可解释性</strong>：当一个语言模型给出一个答案，没有人能完整解释为什么它给出这个答案而不是另一个。这不只是学术问题——它是部署AI做高风险决策（医疗、法律、金融）的根本性障碍。Anthropic在"机械可解释性"（Mechanistic Interpretability）上投入远超同行，试图从电路层面理解模型内部，但距离完整理解极其遥远。</p>
+        </div>
+        <div class="info-block" style="border-left:3px solid var(--coral);border-radius:0 var(--radius) var(--radius) 0;padding-left:12px">
+          <p><strong>内容生态悖论</strong>（与第四阶段GEO相呼应）：AI用人类内容训练自己 → AI直接回答问题 → 减少用户访问原始内容 → 内容创作者收入下降 → 高质量内容产生减少 → AI的训练数据质量下降。这个循环目前没有明确的解决方案，是内容产业和AI行业共同面临的结构性问题。</p>
+        </div>
+        <div class="warning-block"><p>这五个未解难题的共同特征：它们都不是"再堆更多算力就能解决"的问题，而是需要范式级别的新思路。这和前三个阶段"规模是万能药"的逻辑形成了鲜明对比——我们正在进入一个需要更多算法创新而非算力暴力的阶段。</p></div>
+      </div>
+
+      <!-- 5-6 全程总结 -->
+      <div class="step-panel" data-step="5">
+        <div class="step-era">全程总结</div>
+        <div class="step-title">五个阶段走完：你现在拥有的认知地图</div>
+        <div class="success-block"><p>从Word2Vec到Agent，这条演进线的底层逻辑始终一致：每一代技术都在回答前一代留下的核心痛点。RNN解决了"词没有语义关系"，Transformer解决了"无法并行且长程遗忘"，规模化解决了"能力天花板"，RLHF解决了"有能力但不听话"，推理模型解决了"听话但不会深度思考"，Agent解决了"会思考但不能行动"。</p></div>
+        <div class="info-block"><p>你现在能回答的问题：为什么Transformer比RNN革命性 / 为什么BERT和GPT走了不同的路 / 为什么GPT-3是质变而不只是量变 / ChatGPT和GPT-3的本质区别是什么 / DeepSeek为什么能用更少资源做出更好效果 / o1/R1和普通模型有什么根本不同 / Agent为什么是当前最热的方向。</p></div>
+        <div class="warning-block"><p>还没有答案的问题（也是这个领域最有趣的地方）：模型真的在"理解"还是在"匹配模式"？推理能力的上限在哪里？对齐方法在超强模型上还有效吗？什么时候、以何种形式才算是AGI？这些问题，连这个领域最顶尖的研究者也没有确定答案。</p></div>
+
+        <div class="reading-list">
+          <h3>延伸阅读</h3>
+          <div class="paper-item">
+            <div class="paper-year">2024</div>
+            <div class="paper-content">
+              <div class="paper-title">DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning</div>
+              <div class="paper-authors">DeepSeek AI</div>
+              <div class="paper-note">R1原始技术报告。Section 2.1对"跳过SFT直接RL"的描述是核心，其余可选读。开源且附有详细训练细节。</div>
+            </div>
+          </div>
+          <div class="paper-item">
+            <div class="paper-year">2023</div>
+            <div class="paper-content">
+              <div class="paper-title">Toolformer: Language Models Can Teach Themselves to Use Tools</div>
+              <div class="paper-authors">Schick et al. · Meta AI</div>
+              <div class="paper-note">工具调用的早期奠基性论文。理解Agent能调用外部工具这个能力的起源，比后来的复杂框架更容易读。</div>
+            </div>
+          </div>
+          <div class="paper-item">
+            <div class="paper-year">2024</div>
+            <div class="paper-content">
+              <div class="paper-title">Scaling LLM Test-Time Compute Optimally</div>
+              <div class="paper-authors">Snell et al. · UC Berkeley</div>
+              <div class="paper-note">推理时扩展计算量的理论基础。解释为什么让模型"多想一会儿"能提升效果，o1系列推理模型的理论支撑之一。</div>
+            </div>
+          </div>
+          <div class="paper-item">
+            <div class="paper-year">2022</div>
+            <div class="paper-content">
+              <div class="paper-title">Emergent Abilities of Large Language Models</div>
+              <div class="paper-authors">Wei et al. · Google Brain</div>
+              <div class="paper-note">涌现能力的系统性研究。用大量实验证明能力在规模阈值后突然出现，而非平滑提升。贯穿第三到五阶段的核心概念。</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:28px;padding:20px;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--radius-lg)">
+          <p style="font-size:13px;color:var(--accent);font-weight:500;margin-bottom:8px">推送到GitHub</p>
+          <p style="font-size:12px;color:var(--text2);line-height:1.7">把这个 HTML 文件推送到 GitHub 仓库，在仓库设置里开启 GitHub Pages（选择 main 分支 / root），等几分钟后就能通过 <code>https://你的用户名.github.io/仓库名</code> 访问——无需服务器，任何人都可以直接阅读。</p>
+        </div>
+      </div>
+
+    </div><!-- end panels-5 -->
+    <div class="stepper-nav">
+      <button class="btn" id="prev-5" onclick="stepNav(5,-1)">← 上一步</button>
+      <span class="stepper-counter" id="counter-5">1 / 6</span>
+      <button class="btn primary" id="next-5" onclick="stepNav(5,1)">下一步 →</button>
+    </div>
+  </div><!-- end stepper-5 -->
+
+  <div class="stage-footer">
+    <button class="btn" onclick="showStage(4)">← 第四阶段</button>
+    <span style="font-size:12px;color:var(--text3)">全部阶段已完成</span>
+  </div>
+</div>
+</section>
+</main>
+</div><!-- end app -->
+
+<script>
+// ── Stage Navigation ──
+let currentStage = 0;
+const totalStages = 6;
+
+function showStage(idx) {
+  document.querySelectorAll('.stage-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-stage-btn').forEach((b, i) => {
+    b.classList.remove('active');
+    if (i < idx) b.classList.add('done');
+    else b.classList.remove('done');
+  });
+  document.getElementById('stage-' + idx).classList.add('active');
+  document.getElementById('nav-' + idx).classList.add('active');
+  currentStage = idx;
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress() {
+  const pct = currentStage === 0 ? 2 : Math.round((currentStage / (totalStages - 1)) * 100);
+  document.getElementById('progress').style.width = pct + '%';
+}
+
+// ── Stepper Logic ──
+const stepperState = {};
+
+function initStepper(stageId, count, labels) {
+  stepperState[stageId] = { current: 0, total: count };
+  const pillsEl = document.getElementById('pills-' + stageId);
+  labels.forEach((l, i) => {
+    const b = document.createElement('button');
+    b.className = 'step-pill' + (i === 0 ? ' active' : '');
+    b.textContent = l;
+    b.onclick = () => goStep(stageId, i);
+    pillsEl.appendChild(b);
+  });
+  goStep(stageId, 0);
+}
+
+function goStep(stageId, idx) {
+  const panels = document.querySelectorAll('#panels-' + stageId + ' .step-panel');
+  const pills = document.querySelectorAll('#pills-' + stageId + ' .step-pill');
+  const state = stepperState[stageId];
+  if (!state) return;
+  panels[state.current]?.classList.remove('active');
+  pills[state.current]?.classList.remove('active');
+  state.current = idx;
+  panels[idx]?.classList.add('active');
+  pills[idx]?.classList.add('active');
+  const counter = document.getElementById('counter-' + stageId);
+  if (counter) counter.textContent = (idx + 1) + ' / ' + state.total;
+  const prev = document.getElementById('prev-' + stageId);
+  const next = document.getElementById('next-' + stageId);
+  if (prev) prev.style.visibility = idx === 0 ? 'hidden' : 'visible';
+  if (next) {
+    if (idx === state.total - 1) { next.style.display = 'none'; }
+    else { next.style.display = ''; next.style.visibility = 'visible'; }
+  }
+}
+
+function stepNav(stageId, dir) {
+  const state = stepperState[stageId];
+  if (!state) return;
+  const next = state.current + dir;
+  if (next >= 0 && next < state.total) goStep(stageId, next);
+}
+
+// ── Expand Nodes ──
+function toggleExpand(trigger) {
+  const content = trigger.nextElementSibling;
+  const icon = trigger.querySelector('.expand-icon');
+  const isOpen = trigger.classList.contains('open');
+  trigger.classList.toggle('open', !isOpen);
+  content.classList.toggle('open', !isOpen);
+  icon.textContent = isOpen ? '+' : '×';
+}
+
+// ── Init ──
+document.addEventListener('DOMContentLoaded', () => {
+  initStepper(1, 5, ['起点', 'Word2Vec', 'RNN/LSTM', 'Attention雏形', '阶段总结']);
+  initStepper(2, 7, ['开场', 'Self-Attention', '并行计算', '位置编码', 'Encoder/Decoder', 'BERT vs GPT', '阶段总结']);
+  initStepper(3, 6, ['GPT-3涌现', '规模定律', '对齐问题', 'RLHF三步', 'ChatGPT诞生', '阶段总结']);
+  initStepper(4, 7, ['开场', 'MoE架构', '五家路线', 'DeepSeek', '长上下文·RAG', '推理与GEO', '阶段总结']);
+  initStepper(5, 6, ['推理模型', 'Agent框架', 'Skill·编程Agent', '长期记忆', '四大难题', '全程总结']);
+  updateProgress();
+});
+</script>
+</body>
+</html>
