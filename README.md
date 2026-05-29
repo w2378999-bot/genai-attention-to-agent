@@ -2,7 +2,7 @@
 
 > 从 Word2Vec 到 Agent，沿着每一代技术回答前一代痛点的逻辑，走完生成式 AI 的完整演进路径。
 
-**在线阅读**：[your-username.github.io/your-repo-name](https://your-username.github.io/your-repo-name)
+**在线阅读**：[your-username.github.io/your-repo-name](https://your-username.github.io/genai-attention-to-agent)
 
 ---
 
