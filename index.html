@@ -45,7 +45,7 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.7;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 300;
 }
 a { color: var(--accent); text-decoration: none; }
@@ -89,7 +89,7 @@ code {
   letter-spacing: 0.02em;
 }
 .sidebar-logo p {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text3);
   margin-top: 4px;
   font-weight: 300;
@@ -209,14 +209,14 @@ code {
   gap: 2px;
 }
 .hero-meta-item .label {
-  font-size: 10px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text3);
   font-weight: 500;
 }
 .hero-meta-item .value {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text2);
   font-weight: 400;
 }
@@ -261,7 +261,7 @@ code {
 }
 .timeline-step:last-child .tl-line { display: none; }
 .tl-label {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text3);
   margin-top: 8px;
   text-align: center;
@@ -354,7 +354,7 @@ code {
 .step-panel { display: none; }
 .step-panel.active { display: block; }
 .step-era {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -376,7 +376,7 @@ code {
   margin-top: 24px;
 }
 .stepper-counter {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text3);
   font-family: var(--mono);
 }
@@ -405,43 +405,39 @@ code {
 .btn:disabled, .btn[style*="visibility:hidden"] { opacity: 0; pointer-events: none; }
 
 /* ── Content Blocks ── */
-.info-block {
-  background: var(--bg2);
+.info-block { var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 14px 18px;
   margin: 12px 0;
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text2);
   line-height: 1.7;
 }
-.success-block {
-  background: rgba(78,201,168,0.06);
+.success-block { rgba(78,201,168,0.06);
   border: 1px solid rgba(78,201,168,0.2);
   border-radius: var(--radius);
   padding: 14px 18px;
   margin: 12px 0;
-  font-size: 13px;
+  font-size: 15px;
   color: #0d4a36;
   line-height: 1.7;
 }
-.warning-block {
-  background: rgba(240,192,96,0.06);
+.warning-block { rgba(240,192,96,0.06);
   border: 1px solid rgba(240,192,96,0.2);
   border-radius: var(--radius);
   padding: 14px 18px;
   margin: 12px 0;
-  font-size: 13px;
+  font-size: 15px;
   color: #6b4400;
   line-height: 1.7;
 }
-.danger-block {
-  background: rgba(240,96,96,0.06);
+.danger-block { rgba(240,96,96,0.06);
   border: 1px solid rgba(240,96,96,0.2);
   border-radius: var(--radius);
   padding: 14px 18px;
   margin: 12px 0;
-  font-size: 13px;
+  font-size: 15px;
   color: #7a1e1e;
   line-height: 1.7;
 }
@@ -473,7 +469,7 @@ code {
   padding: 12px 14px;
 }
 .col-card .col-label {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -481,13 +477,13 @@ code {
   margin-bottom: 6px;
 }
 .col-card p {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text2);
   line-height: 1.6;
 }
 .tag {
   display: inline-block;
-  font-size: 10px;
+  font-size: 12px;
   padding: 2px 8px;
   border-radius: 10px;
   border: 1px solid var(--border2);
@@ -540,7 +536,7 @@ code {
 }
 .expand-label { flex: 1; }
 .expand-hint {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text3);
   font-weight: 400;
   font-style: italic;
@@ -639,18 +635,18 @@ code {
 }
 .paper-content { flex: 1; }
 .paper-title {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text);
   font-weight: 400;
   line-height: 1.45;
   margin-bottom: 3px;
 }
 .paper-authors {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text3);
 }
 .paper-note {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--teal);
   margin-top: 3px;
   font-style: italic;
@@ -951,7 +947,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">2013</div>
             <div class="paper-content">
-              <div class="paper-title">Efficient Estimation of Word Representations in Vector Space</div>
+              <div class="paper-title"><a href="https://arxiv.org/abs/1301.3781" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">Efficient Estimation of Word Representations in Vector Space ↗</a></div>
               <div class="paper-authors">Mikolov et al. · Google</div>
               <div class="paper-note">Word2Vec原始论文。理解词向量的起点，数学部分可跳过，重点看动机和实验结果。</div>
             </div>
@@ -959,7 +955,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">2014</div>
             <div class="paper-content">
-              <div class="paper-title">Sequence to Sequence Learning with Neural Networks</div>
+              <div class="paper-title"><a href="https://arxiv.org/abs/1409.3215" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">Sequence to Sequence Learning with Neural Networks ↗</a></div>
               <div class="paper-authors">Sutskever, Vinyals, Le · Google</div>
               <div class="paper-note">Seq2Seq架构原始论文。理解Encoder-Decoder范式的必读文章。</div>
             </div>
@@ -967,7 +963,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">2015</div>
             <div class="paper-content">
-              <div class="paper-title">Neural Machine Translation by Jointly Learning to Align and Translate</div>
+              <div class="paper-title"><a href="https://arxiv.org/abs/1409.0473" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">Neural Machine Translation by Jointly Learning to Align and Translate ↗</a></div>
               <div class="paper-authors">Bahdanau, Cho, Bengio</div>
               <div class="paper-note">Attention机制雏形的原始论文。图2的可视化attention权重矩阵非常直观，值得仔细看。</div>
             </div>
@@ -975,7 +971,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">博文</div>
             <div class="paper-content">
-              <div class="paper-title">Understanding LSTM Networks</div>
+              <div class="paper-title"><a href="https://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">Understanding LSTM Networks ↗</a></div>
               <div class="paper-authors">Christopher Olah · colah.github.io</div>
               <div class="paper-note">公认最清晰的LSTM图文解释，配图极好。比任何论文都更容易理解门控机制。</div>
             </div>
@@ -1027,7 +1023,7 @@ code {
       <div class="step-panel" data-step="1">
         <div class="step-era">核心突破一</div>
         <div class="step-title">Self-Attention：一句话里的词，互相做Attention</div>
-        <div class="info-block"><p>之前的Attention是跨语言的：英文词（Decoder）去查英文输入词（Encoder）的权重。<span class="term">Self-Attention<span class="tooltip"><span class="tooltip-name">Self-Attention</span>自注意力机制。同一句话里每个词都去查自己这句话里所有其他词的权重，Query、Key、Value全来自同一句话。</span></span>的"Self"意味着：同一句话里的每个词，都去查自己这句话里所有其他词的权重——包括自己。</p></div>
+        <div class="info-block"><p>之前的Attention是跨句子的：翻译时，目标语言这边（Decoder）去查源语言那边（Encoder）的每个词的权重。<span class="term">Self-Attention<span class="tooltip"><span class="tooltip-name">Self-Attention</span>自注意力机制。同一句话里每个词都去查自己这句话里所有其他词的权重，Query、Key、Value全来自同一句话。</span></span>的"Self"意味着：同一句话里的每个词，都去查自己这句话里所有其他词的权重——包括自己。</p></div>
         <div class="success-block"><p>这解决了什么问题？语言里充满了需要跨越距离才能理解的依赖关系。"The animal didn't cross the street because it was too tired." 这里的"it"指的是"animal"还是"street"？人类一眼就知道，但距离很远。Self-Attention让"it"可以直接和"animal"建立连接，不需要经过中间所有词的传递。</p></div>
         <div class="accent-block"><p>RNN的方式：消息从第1个词口耳相传到第10个词，传到最后难免失真。Self-Attention的方式：开一个所有词都在场的会议，每个词可以直接和任何其他词对话，不需要中间人。</p></div>
 
@@ -1157,7 +1153,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">2017</div>
             <div class="paper-content">
-              <div class="paper-title">Attention Is All You Need</div>
+              <div class="paper-title"><a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">Attention Is All You Need ↗</a></div>
               <div class="paper-authors">Vaswani et al. · Google Brain</div>
               <div class="paper-note">Transformer原始论文。Figure 1的架构图和Section 3.2的Scaled Dot-Product Attention是核心，其余可选读。</div>
             </div>
@@ -1165,7 +1161,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">2018</div>
             <div class="paper-content">
-              <div class="paper-title">BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding</div>
+              <div class="paper-title"><a href="https://arxiv.org/abs/1810.04805" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding ↗</a></div>
               <div class="paper-authors">Devlin et al. · Google</div>
               <div class="paper-note">BERT原始论文。重点读Section 3（预训练任务）和实验结果，理解双向理解的价值。</div>
             </div>
@@ -1173,7 +1169,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">博文</div>
             <div class="paper-content">
-              <div class="paper-title">The Illustrated Transformer</div>
+              <div class="paper-title"><a href="https://jalammar.github.io/illustrated-transformer/" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">The Illustrated Transformer ↗</a></div>
               <div class="paper-authors">Jay Alammar · jalammar.github.io</div>
               <div class="paper-note">公认最好的Transformer图文解释。动画展示Q/K/V计算过程，强烈推荐在读论文之前先看这篇。</div>
             </div>
@@ -1181,7 +1177,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">博文</div>
             <div class="paper-content">
-              <div class="paper-title">The Illustrated BERT, ELMo, and co.</div>
+              <div class="paper-title"><a href="https://jalammar.github.io/illustrated-bert/" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">The Illustrated BERT, ELMo, and co. ↗</a></div>
               <div class="paper-authors">Jay Alammar · jalammar.github.io</div>
               <div class="paper-note">同系列，对比讲解预训练范式的演进，把BERT和GPT的差异讲得非常清楚。</div>
             </div>
@@ -1361,7 +1357,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">2020</div>
             <div class="paper-content">
-              <div class="paper-title">Language Models are Few-Shot Learners</div>
+              <div class="paper-title"><a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">Language Models are Few-Shot Learners ↗</a></div>
               <div class="paper-authors">Brown et al. · OpenAI</div>
               <div class="paper-note">GPT-3原始论文。Section 2（模型描述）可跳过，重点读Introduction和few-shot实验结果部分。</div>
             </div>
@@ -1369,7 +1365,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">2022</div>
             <div class="paper-content">
-              <div class="paper-title">Training language models to follow instructions with human feedback</div>
+              <div class="paper-title"><a href="https://arxiv.org/abs/2203.02155" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">Training language models to follow instructions with human feedback ↗</a></div>
               <div class="paper-authors">Ouyang et al. · OpenAI</div>
               <div class="paper-note">InstructGPT论文，RLHF的原始出处。Figure 2的三步流程图是理解RLHF最清晰的可视化。</div>
             </div>
@@ -1377,7 +1373,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">2022</div>
             <div class="paper-content">
-              <div class="paper-title">Constitutional AI: Harmlessness from AI Feedback</div>
+              <div class="paper-title"><a href="https://arxiv.org/abs/2212.08073" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">Constitutional AI: Harmlessness from AI Feedback ↗</a></div>
               <div class="paper-authors">Bai et al. · Anthropic</div>
               <div class="paper-note">宪法AI原始论文。理解Anthropic的对齐路线和RLHF路线的根本差异。</div>
             </div>
@@ -1385,7 +1381,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">2022</div>
             <div class="paper-content">
-              <div class="paper-title">High-Resolution Image Synthesis with Latent Diffusion Models</div>
+              <div class="paper-title"><a href="https://arxiv.org/abs/2112.10752" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">High-Resolution Image Synthesis with Latent Diffusion Models ↗</a></div>
               <div class="paper-authors">Rombach et al. · LMU Munich</div>
               <div class="paper-note">Stable Diffusion背后的潜在扩散模型论文。Figure 3的架构图直观展示了为什么LDM比像素空间扩散模型快得多。</div>
             </div>
@@ -1651,7 +1647,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">2022</div>
             <div class="paper-content">
-              <div class="paper-title">FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness</div>
+              <div class="paper-title"><a href="https://arxiv.org/abs/2205.14135" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness ↗</a></div>
               <div class="paper-authors">Dao et al. · Stanford</div>
               <div class="paper-note">FlashAttention原始论文。Introduction部分对IO瓶颈的解释非常清晰，不需要读数学推导部分。</div>
             </div>
@@ -1659,7 +1655,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">2023</div>
             <div class="paper-content">
-              <div class="paper-title">DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model</div>
+              <div class="paper-title"><a href="https://arxiv.org/abs/2405.04434" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model ↗</a></div>
               <div class="paper-authors">DeepSeek AI</div>
               <div class="paper-note">DeepSeek V2技术报告。MLA和细粒度MoE的原始出处，图表丰富，比论文更易读。</div>
             </div>
@@ -1667,7 +1663,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">2022</div>
             <div class="paper-content">
-              <div class="paper-title">Chain-of-Thought Prompting Elicits Reasoning in Large Language Models</div>
+              <div class="paper-title"><a href="https://arxiv.org/abs/2201.11903" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">Chain-of-Thought Prompting Elicits Reasoning in Large Language Models ↗</a></div>
               <div class="paper-authors">Wei et al. · Google Brain</div>
               <div class="paper-note">思维链原始论文。Figure 1的对比例子一眼就能理解核心发现，是目前引用量最高的提示工程论文。</div>
             </div>
@@ -1675,7 +1671,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">2023</div>
             <div class="paper-content">
-              <div class="paper-title">Direct Preference Optimization: Your Language Model is Secretly a Reward Model</div>
+              <div class="paper-title"><a href="https://arxiv.org/abs/2305.18290" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">Direct Preference Optimization: Your Language Model is Secretly a Reward Model ↗</a></div>
               <div class="paper-authors">Rafailov et al. · Stanford</div>
               <div class="paper-note">DPO原始论文。理解为什么可以跳过单独训练奖励模型这一步，Section 2的推导直观易懂。</div>
             </div>
@@ -1884,7 +1880,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">2024</div>
             <div class="paper-content">
-              <div class="paper-title">DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning</div>
+              <div class="paper-title"><a href="https://arxiv.org/abs/2501.12948" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning ↗</a></div>
               <div class="paper-authors">DeepSeek AI</div>
               <div class="paper-note">R1原始技术报告。Section 2.1对"跳过SFT直接RL"的描述是核心，其余可选读。开源且附有详细训练细节。</div>
             </div>
@@ -1892,7 +1888,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">2023</div>
             <div class="paper-content">
-              <div class="paper-title">Toolformer: Language Models Can Teach Themselves to Use Tools</div>
+              <div class="paper-title"><a href="https://arxiv.org/abs/2302.04761" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">Toolformer: Language Models Can Teach Themselves to Use Tools ↗</a></div>
               <div class="paper-authors">Schick et al. · Meta AI</div>
               <div class="paper-note">工具调用的早期奠基性论文。理解Agent能调用外部工具这个能力的起源，比后来的复杂框架更容易读。</div>
             </div>
@@ -1900,7 +1896,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">2024</div>
             <div class="paper-content">
-              <div class="paper-title">Scaling LLM Test-Time Compute Optimally</div>
+              <div class="paper-title"><a href="https://arxiv.org/abs/2408.03314" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">Scaling LLM Test-Time Compute Optimally ↗</a></div>
               <div class="paper-authors">Snell et al. · UC Berkeley</div>
               <div class="paper-note">推理时扩展计算量的理论基础。解释为什么让模型"多想一会儿"能提升效果，o1系列推理模型的理论支撑之一。</div>
             </div>
@@ -1908,7 +1904,7 @@ code {
           <div class="paper-item">
             <div class="paper-year">2022</div>
             <div class="paper-content">
-              <div class="paper-title">Emergent Abilities of Large Language Models</div>
+              <div class="paper-title"><a href="https://arxiv.org/abs/2206.07682" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text)'">Emergent Abilities of Large Language Models ↗</a></div>
               <div class="paper-authors">Wei et al. · Google Brain</div>
               <div class="paper-note">涌现能力的系统性研究。用大量实验证明能力在规模阈值后突然出现，而非平滑提升。贯穿第三到五阶段的核心概念。</div>
             </div>
